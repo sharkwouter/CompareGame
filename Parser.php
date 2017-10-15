@@ -85,7 +85,7 @@ class Parser {
                 foreach ($product->query($query) as $value) {
                     $output = $value;
                 }
-                
+
                 //Do different things with the output, based on which query we used
                 if ($key == "link") {
                     $result [$key] = $output->getAttribute('href');
@@ -95,10 +95,15 @@ class Parser {
                     $result [$key] = $output->nodeValue;
                 }
             }
-            
+
             //Don't add games with no price to the gamesList
             if ($result ["price"] > 0) {
-                $this->addGame(new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]));
+                $new = new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]);
+                if (!$this->isDuplicateGame($new)) {
+                    $this->addGame($new);
+                } else {
+                    break;
+                }
             }
         }
     }
@@ -114,8 +119,16 @@ class Parser {
     public function addGame(Game $add) {
         $this->gamesList [] = $add;
     }
-    
-    
+
+    //Use the equals function of a game to see if it is already in the gamesList, so we don't add games twice
+    public function isDuplicateGame(Game $new) {
+        foreach ($this->gamesList as $game) {
+            if ($game->equals($new)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     //Thanks anonymous user on php.net
     function Getfloat($str) {

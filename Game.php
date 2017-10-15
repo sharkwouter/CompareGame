@@ -35,7 +35,7 @@ class Game {
         //Add data
         $sql = str_replace("%table%", $table, $sql);
         $sql = str_replace("%name%", htmlspecialchars($this->name), $sql);
-        $sql = str_replace("%price%", (float) $this->price, $sql);
+        $sql = str_replace("%price%", $this->price, $sql);
         $sql = str_replace("%platform%", htmlspecialchars($this->platform), $sql);
         $sql = str_replace("%store%", htmlspecialchars($this->store), $sql);
         $sql = str_replace("%link%", htmlspecialchars($this->link), $sql);
@@ -58,5 +58,20 @@ class Game {
         "Price: " . round($this->price, 2) . "<br>" .
         "platform: " . $this->platform . "<br>" .
         "store: " . $this->store . "<br>";
+    }
+
+    //Check if this game as the same as another game
+    public function equals(Game $other) {
+        if (
+                $this->name == $other->name &&
+                $this->price == $other->price &&
+                $this->platform == $other->platform &&
+                $this->store == $other->store &&
+                $this->link == $other->link
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
