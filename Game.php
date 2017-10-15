@@ -12,25 +12,26 @@
  * @author wouter
  */
 class Game {
+
     //put your code here
     private $name;
     private $price;
     private $platform;
     private $store;
     private $link;
-    
-    public function __construct(string $name, string $price, string $platform, string $store, string $link) {
+
+    public function __construct(string $name, float $price, string $platform, string $store, string $link) {
         $this->name = $name;
         $this->price = $price;
         $this->platform = $platform;
         $this->store = $store;
         $this->link = $link;
     }
-    
-    public function returnSQL(string $table){
+
+    public function returnSQL(string $table) {
         //Base sql statement
         $sql = "INSERT INTO %table%(name,price,platform,store,link) values(\"%name%\", %price%, \"%platform%\", \"%store%\",\"%link%\")";
-        
+
         //Add data
         $sql = str_replace("%table%", $table, $sql);
         $sql = str_replace("%name%", htmlspecialchars($this->name), $sql);
@@ -38,11 +39,10 @@ class Game {
         $sql = str_replace("%platform%", htmlspecialchars($this->platform), $sql);
         $sql = str_replace("%store%", htmlspecialchars($this->store), $sql);
         $sql = str_replace("%link%", htmlspecialchars($this->link), $sql);
-        
         return $sql;
     }
-    
-    public function returnData(){
+
+    public function returnData() {
         $data = array(
             "name" => $this->name,
             "price" => $this->price,
@@ -52,11 +52,11 @@ class Game {
         );
         return $data;
     }
-    
-    public function printData(){
-        echo "<p><a href='".$this->link."'><h3>".$this->name."</h3></a></p>".
-             "Price: ".$this->price."<br>".
-             "platform: ".$this->platform."<br>".
-             "store: ".$this->store."<br>";
+
+    public function printData() {
+        echo "<p><a href='" . $this->link . "'><h3>" . $this->name . "</h3></a></p>" .
+        "Price: " . round($this->price, 2) . "<br>" .
+        "platform: " . $this->platform . "<br>" .
+        "store: " . $this->store . "<br>";
     }
 }

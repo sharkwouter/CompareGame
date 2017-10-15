@@ -11,11 +11,21 @@ class Import {
         //Nedgame
         $this->storeList [] = new Parser("nedgame", "Xbox One",
                 "nedgame.html", false,
-                "//table[@class='productTable']/tbody/tr",
-                "//table[@class='productTable']/tbody/tr[@id='%product%']/td[@class='title']/div[@class='titlewrapper']/a/h3",
-                "//table[@class='productTable']/tbody/tr[@id='%product%']/td[@class='buy']/div[@class='koopdiv']/div[@class='currentprice']",
-                "//table[@class='productTable']/tbody/tr[@id='%product%']/td[@class='title']/div[@class='titlewrapper']/a");
+                "//table[@class='productTable']/tbody/tr", //Tag containing individual products
+                "//td[@class='title']/div[@class='titlewrapper']/a/h3", //product name
+                "//td[@class='buy']/div[@class='koopdiv']/div[@class='currentprice']", //price
+                "//td[@class='title']/div[@class='titlewrapper']/a" //link
+                );
 
+        //Tweakers
+        $this->storeList [] = new Parser("tweakers", "Xbox One",
+                "tweakers.html", false,
+                "//tr[@class='largethumb']", //Tag containing individual products
+                "//a[@class='editionName']", //product name
+                "//p[@class='price']/a", //price
+                "//a[@class='editionName']" //link
+                );
+    
     }
     
     public function getGamesList(){

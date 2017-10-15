@@ -24,8 +24,8 @@ class Parser {
     //These will become arrays
     private $gamesList = array();
     private $queryList = array();
-    private $productsList; //This one is for parsing individual products from the page
-    
+    //Products
+    private $productsList;
     //These are for XML parsing
     private $html;
     private $path;
@@ -50,15 +50,23 @@ class Parser {
         $this->html->loadHTMLFile($this->url);
         $this->path = new DOMXPath($this->html);
 
-        //This is fucking retarded, but I expect every game to have it's own id
-        foreach ($this->path->query($QueryProducts) as $product) {
-            $this->productsList[] = $product->attributes->getNamedItem('id')->value;
+        //Load only what is relevant
+        $products = $this->path->query($QueryProducts);
+
+        //Fill up the productsList with DomXPath objects which contain only 1 product
+        foreach ($products as $product) {
+            $loadHtml = $this->html->saveHTML($product);
+            $dom = new DOMDocument();
+            $dom->loadHTML($loadHtml);
+            $this->productsList [] = new DOMXPath($dom);
         }
+
+
         if (in_array($platform, $this->acceptedPlaforms)) {
             $this->platform = $platform;
             $this->Parse();
         } else {
-            echo $platform."is not a supported console";
+            echo $platform . "is not a supported console";
         }
     }
 
@@ -66,27 +74,32 @@ class Parser {
         foreach ($this->productsList as $product) {
             //Create arry which is used for creating the current game object
             $result = array();
-            
+
             //Values which we already know
             $result["platform"] = $this->platform;
             $result["store"] = $this->store;
-            
+
             //for every game on the current page:
             foreach ($this->queryList as $key => $query) {
-                
-                //insert product id into query
-                $query = str_replace("%product%", $product, $query);
-                foreach ($this->path->query($query) as $value) {
+
+                foreach ($product->query($query) as $value) {
                     $output = $value;
                 }
                 
-                if($key == "link"){
-                    $result [$key] = $output->attributes->getNamedItem('href')->value;
+                //Do different things with the output, based on which query we used
+                if ($key == "link") {
+                    $result [$key] = $output->getAttribute('href');
+                } elseif ($key == "price") {
+                    $result [$key] = $this->Getfloat($output->nodeValue);
                 } else {
                     $result [$key] = $output->nodeValue;
                 }
             }
-            $this->addGame(new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]));
+            
+            //Don't add games with no price to the gamesList
+            if ($result ["price"] > 0) {
+                $this->addGame(new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]));
+            }
         }
     }
 
@@ -101,5 +114,20 @@ class Parser {
     public function addGame(Game $add) {
         $this->gamesList [] = $add;
     }
+    
+    
 
+    //Thanks anonymous user on php.net
+    function Getfloat($str) {
+        if (strstr($str, ",")) {
+            $str = str_replace(".", "", $str); // replace dots (thousand seps) with blancs
+            $str = str_replace(",", ".", $str); // replace ',' with '.'
+        }
+
+        if (preg_match("#([0-9\.]+)#", $str, $match)) { // search for number that may contain '.'
+            return floatval($match[0]);
+        } else {
+            return floatval($str); // take some last chances with floatval
+        }
+    }
 }
