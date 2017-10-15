@@ -54,10 +54,9 @@ class Game {
     }
     
     public function printData(){
-        echo "<p><h3>".$this->name."</h3></p>".
+        echo "<p><a href='".$this->link."'><h3>".$this->name."</h3></a></p>".
              "Price: ".$this->price."<br>".
              "platform: ".$this->platform."<br>".
-             "store: ".$this->store."<br>".
-             "link: ".$this->link."<br>";
+             "store: ".$this->store."<br>";
     }
 }

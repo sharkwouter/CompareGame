@@ -6,7 +6,8 @@ and open the template in the editor.
 -->
 <?php
     include_once 'Game.php';
-    include_once 'Parser.php'
+    include_once 'Parser.php';
+    include_once 'Import.php';
 ?>
 <html>
     <head>
@@ -21,13 +22,9 @@ and open the template in the editor.
         //$gametest = new Game("Testname", 5.99, "Xbox One", "Nedgame","https://nedgame.nl/");
         //echo $gametest->returnSQL("Test");
         
-        $nedgame = new Parser("nedgame", "nedgame.html", false,
-                "//table[@class='productTable']/tbody/tr",
-                "//table[@class='productTable']/tbody/tr[@id='%product%']/td[@class='title']/div[@class='titlewrapper']/a/h3",
-                "//table[@class='productTable']/tbody/tr[@id='%product%']/td[@class='buy']/div[@class='koopdiv']/div[@class='currentprice']",
-                "//table[@class='productTable']/tbody/tr[@id='%product%']/td[@class='title']/div[@class='titlewrapper']/span[@class='productinfo']/a");
+        $import = new Import();
         
-        $games = $nedgame->getGameList();
+        $games = $import->getGamesList();
         
         foreach ($games as $game){
             $game->printData();

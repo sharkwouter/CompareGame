@@ -18,18 +18,21 @@ class Parser {
     //These will become strings   
     private $store;
     private $url;
+    private $platform;
     //These will become booleans
     private $hasPages;
     //These will become arrays
-    private $gamesList;
-    private $queryList;
+    private $gamesList = array();
+    private $queryList = array();
     private $productsList; //This one is for parsing individual products from the page
     
     //These are for XML parsing
     private $html;
     private $path;
+    //Temp solution platforms
+    private $acceptedPlaforms = array("Xbox One");
 
-    public function __construct(string $store, string $url, bool $hasPages, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryPlatform) {
+    public function __construct(string $store, string $platform, string $url, bool $hasPages, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink) {
         //Load given variables
         $this->store = $store;
         $this->url = $url;
@@ -39,7 +42,7 @@ class Parser {
         $this->queryList = array(
             "name" => $QueryName,
             "price" => $QueryPrice,
-            "platform" => $QueryPlatform
+            "link" => $QueryLink
         );
 
         //Create objects required for XML parsing, assuming nothing goes wrong
@@ -51,27 +54,43 @@ class Parser {
         foreach ($this->path->query($QueryProducts) as $product) {
             $this->productsList[] = $product->attributes->getNamedItem('id')->value;
         }
-        
-        $this->Parse();
-    }
-
-    public function Parse() {
-        foreach($this->productsList as $product) {
-            /* @var $result array */
-            $result;
-            foreach ($this->queryList as $key => $query) {
-                //insert product id into query
-                $query = str_replace("%product%", $product, $query);
-                
-                foreach ($this->path->query($query) as $value) {
-                    $result [$key] = $value->nodeValue;
-                }
-            }
-            $this->addGame(new Game($result["name"], $result["price"], $result["platform"], $this->store, $this->url));
+        if (in_array($platform, $this->acceptedPlaforms)) {
+            $this->platform = $platform;
+            $this->Parse();
+        } else {
+            echo $platform."is not a supported console";
         }
     }
 
-    public function getGameList() {
+    public function Parse() {
+        foreach ($this->productsList as $product) {
+            //Create arry which is used for creating the current game object
+            $result = array();
+            
+            //Values which we already know
+            $result["platform"] = $this->platform;
+            $result["store"] = $this->store;
+            
+            //for every game on the current page:
+            foreach ($this->queryList as $key => $query) {
+                
+                //insert product id into query
+                $query = str_replace("%product%", $product, $query);
+                foreach ($this->path->query($query) as $value) {
+                    $output = $value;
+                }
+                
+                if($key == "link"){
+                    $result [$key] = $output->attributes->getNamedItem('href')->value;
+                } else {
+                    $result [$key] = $output->nodeValue;
+                }
+            }
+            $this->addGame(new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]));
+        }
+    }
+
+    public function getGamesList() {
         return $this->gamesList;
     }
 
