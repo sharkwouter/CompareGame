@@ -30,7 +30,7 @@ class Parser {
     private $html;
     private $path;
     //Temp solution platforms
-    private $acceptedPlaforms = array("Xbox One");
+    private $acceptedPlaforms = array("Xbox One","Gamecube");
 
     public function __construct(string $store, string $platform, string $url, bool $hasPages, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink) {
         //Load given variables
@@ -66,7 +66,7 @@ class Parser {
             $this->platform = $platform;
             $this->Parse();
         } else {
-            echo $platform . "is not a supported console";
+            echo $platform . " is not a supported console";
         }
     }
 
