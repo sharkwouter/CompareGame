@@ -11,7 +11,7 @@ class Import {
         //Nedgame, Xbox One
         $this->storeList [] = new Parser("nedgame", //Store name in lowercase
                 "Xbox One", //The platform, has to be in the supported platforms list
-                "nedgame.html", //filename or url of store page
+                new Url("nedgame.html"), //filename or url of store page
                 "//table[@class='productTable']/tbody/tr", //Tag containing individual products
                 "//td[@class='title']/div[@class='titlewrapper']/a/h3", //product name
                 "//td[@class='buy']/div[@class='koopdiv']/div[@class='currentprice']", //price
@@ -22,7 +22,7 @@ class Import {
         //Tweakers, Xbox One
         $this->storeList [] = new Parser("tweakers", //Store name in lowercase
                 "Xbox One", //The platform, has to be in the supported platforms list
-                "tweakers.html", //filename or url of store page
+                new Url("tweakers.html"), //filename or url of store page
                 "//tr[@class='largethumb']", //Tag containing individual products
                 "//a[@class='editionName']", //product name
                 "//p[@class='price']/a", //price
@@ -33,7 +33,7 @@ class Import {
         //Mariocube, Gamecube
         $this->storeList [] = new Parser("mariocube", //Store name in lowercase
                 "Gamecube", //The platform, has to be in the supported platforms list
-                "mariocube.html", //filename or url of store page
+                new Url("https://www.mariocube.nl/GameCube_Winkel.php?t=Games&p=3&p=1"), //filename or url of store page
                 "//div[@id='main_midden']/div[@id='winkelblokl']|//div[@id='main_midden']/div[@id='winkelblokr']", //Tag containing individual products
                 "//div[@id='wtitel']/a|//div[@id='wtitels']/a", //product name
                 "//div[@id='wprijs']", //price

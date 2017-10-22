@@ -6,6 +6,7 @@
  * and open the template in the editor.
  */
 
+include_once 'Url.php';
 include_once 'Game.php';
 
 /**
@@ -19,8 +20,10 @@ class Parser {
     private $store;
     private $platform;
     private $products; //Contains the products query
+    private $urlBase;
     //These will become booleans
     private $hasPages = false;
+    private $duplicateFound = false;
     //These will be used for XML
     private $html;
     private $path;
@@ -31,11 +34,12 @@ class Parser {
     private $productsList;
 
     //Constructor for single page websites, probably not used much
-    public function __construct(string $store, string $platform, string $url, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink, string $QueryNextPage) {
+    public function __construct(string $store, string $platform, Url $url, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink, string $QueryNextPage) {
         //Load given variables
         $this->store = $store;
         $this->platform = $platform;
         $this->products = $QueryProducts;
+        $this->urlBase = $url->getBase();
 
         //Create the queries list
         $this->queryList = array(
@@ -44,12 +48,11 @@ class Parser {
             "link" => $QueryLink,
         );
         
-        
-        
+        //We use the nextpage variable so we can parse more pages
         $nextpage = $url;
         
-        //Parse the given page
-        while(!empty($nextpage)) {
+        //Parse the given page, quit when there is no next page or we found a duplicate
+        while(!empty($nextpage) && $this->duplicateFound == false) {
             $this->parsePage($nextpage);
             if(empty($QueryNextPage)){
                 $nextpage = "";
@@ -121,14 +124,15 @@ class Parser {
     }
     
     private function getNextURL(string $query){
+        $output = "";
         //The foreach because sometimes the next page is the last one in a list of links
         foreach ($this->path->query($query) as $value) {
-           $output = $value;
+           $output = $value->getAttribute('href');
         }
-        if(isset($output)) {
-            return $output->getAttribute('href');
+        if(isset($output) && !strstr($output, $this->urlBase)) {
+            $output = $this->urlBase."/".$output;
         }
-        return "";
+        return $output;
     }
     
     public function getGamesList() {
@@ -150,6 +154,7 @@ class Parser {
     private function isDuplicateGame(Game $new) {
         foreach ($this->gamesList as $game) {
             if ($game->equals($new)) {
+                $this->duplicateFound = true;
                 return true;
             }
         }

@@ -6,6 +6,7 @@ and open the template in the editor.
 -->
 <?php
     //Include classes
+    include_once 'Url.php';
     include_once 'Game.php';
     include_once 'Database.php';
     include_once 'Parser.php';
