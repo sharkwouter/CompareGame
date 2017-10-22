@@ -20,7 +20,7 @@ class Parser {
     private $url;
     private $platform;
     //These will become booleans
-    private $hasPages;
+    private $hasPages = false;
     //These will become arrays
     private $gamesList = array();
     private $queryList = array();
@@ -32,11 +32,11 @@ class Parser {
     //Temp solution platforms
     private $acceptedPlaforms = array("Xbox One","Gamecube");
 
-    public function __construct(string $store, string $platform, string $url, bool $hasPages, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink) {
+    //Constructor for single page websites, probably not used much
+    public function __construct(string $store, string $platform, string $url, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink, string $QueryNextPage) {
         //Load given variables
         $this->store = $store;
         $this->url = $url;
-        $this->hasPages = $hasPages;
 
         //Create the queries list
         $this->queryList = array(
@@ -69,7 +69,7 @@ class Parser {
             echo $platform . " is not a supported console";
         }
     }
-
+    
     //Generates the game list from the html page
     public function Parse() {
         foreach ($this->productsList as $product) {
