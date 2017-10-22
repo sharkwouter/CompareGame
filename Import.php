@@ -38,7 +38,7 @@ class Import {
                 "//div[@id='wtitel']/a|//div[@id='wtitels']/a", //product name
                 "//div[@id='wprijs']", //price
                 "//div[@id='wtitel']/a|//div[@id='wtitels']/a", //link
-                "" //The query used to go to the next page
+                "//center//div[@id='kopje']/a" //The query used to go to the next page
                 );
 
         
