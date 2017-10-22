@@ -1,0 +1,7 @@
+//This is an example of what the config file should look like
+//Fill your database information in this file and rename it to config.php
+$dbname = "comparegames"; //Name of the database
+$dbip = "127.0.0.1"; //IP address or hostname of the database
+$dbport = "3306"; //TCP port used
+$dbuser = ""; //Username
+$dbpass = ""; //Password
