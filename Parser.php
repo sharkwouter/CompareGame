@@ -70,6 +70,7 @@ class Parser {
         }
     }
 
+    //Generates the game list from the html page
     public function Parse() {
         foreach ($this->productsList as $product) {
             //Create arry which is used for creating the current game object
@@ -116,12 +117,15 @@ class Parser {
         return $this->store;
     }
 
-    public function addGame(Game $add) {
-        $this->gamesList [] = $add;
+    private function addGame(Game $add) {
+        //Only add games which aren't in our list already
+        if($this->isDuplicateGame($add) == FALSE) {
+            $this->gamesList [] = $add;
+        }
     }
 
     //Use the equals function of a game to see if it is already in the gamesList, so we don't add games twice
-    public function isDuplicateGame(Game $new) {
+    private function isDuplicateGame(Game $new) {
         foreach ($this->gamesList as $game) {
             if ($game->equals($new)) {
                 return true;
@@ -131,7 +135,7 @@ class Parser {
     }
 
     //Thanks anonymous user on php.net
-    function Getfloat($str) {
+    private function Getfloat($str) {
         if (strstr($str, ",")) {
             $str = str_replace(".", "", $str); // replace dots (thousand seps) with blancs
             $str = str_replace(",", ".", $str); // replace ',' with '.'
