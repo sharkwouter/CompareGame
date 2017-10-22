@@ -45,12 +45,12 @@ class Database {
             //Check if the game isn't in the database already
             $exists = false;
             $this->queryFindGame->execute(array($data["link"]));
-            while($game = $this->queryFindGame->fetch()){
+            while ($game = $this->queryFindGame->fetch()) {
                 $exists = true;
                 break;
-            } 
+            }
             //Either add or update the database entry based on if it exists already
-            if($exists) {
+            if ($exists) {
                 $this->queryUpdateGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"], $data["link"]));
             } else {
                 $this->queryAddGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
@@ -58,24 +58,24 @@ class Database {
         }
     }
 
-    public function printGames() {
+    public function searchGames(string $search) {
         if ($this->connected) {
             //Open table for data
             print("<p><table>\n");
             print("<tr><th>Name</th><th>price</th><th>Platform</th><th>Store</th></tr>\n");
-            
+
             //Set locale for euro
             setlocale(LC_MONETARY, 'nl_NL');
-            
+
             //Get data from database
-            $queyGetGames = $this->db->prepare("SELECT name,price,platform,store,link FROM Game ORDER BY name"); //sql statment
-            $queyGetGames->execute();
+            $queyGetGames = $this->db->prepare("SELECT name,price,platform,store,link FROM Game WHERE name LIKE ? ORDER BY name"); //sql statment
+            $queyGetGames->execute(array("%".$search."%"));
             while ($game = $queyGetGames->fetch()) {
                 print("<tr>\n");
-                print("<td><a href='".$game["link"]."'>".htmlspecialchars($game["name"])."</a></td>\n");
-                print("<td>". money_format('%(#1n',$game["price"])."</td>\n");
-                print("<td>".htmlspecialchars($game["platform"])."</td>\n");
-                print("<td>".htmlspecialchars($game["store"])."</td>\n");
+                print("<td><a href='" . $game["link"] . "'>" . htmlspecialchars($game["name"]) . "</a></td>\n");
+                print("<td>" . money_format('%(#1n', $game["price"]) . "</td>\n");
+                print("<td>" . htmlspecialchars($game["platform"]) . "</td>\n");
+                print("<td>" . htmlspecialchars($game["store"]) . "</td>\n");
                 print("</tr>\n");
             }
             //Close table
@@ -83,6 +83,10 @@ class Database {
         } else {
             print("<p>Couldn't fetch data from database</p>\n");
         }
+    }
+
+    public function printGames() {
+        $this->searchGames("");
     }
 
 }

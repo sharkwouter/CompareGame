@@ -21,8 +21,8 @@ and open the template in the editor.
     $db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
     
     //Update database if asked
-    $update = filter_input(INPUT_POST, "update");
-    if(isset($update)) {
+    $updateButton = filter_input(INPUT_POST, "update");
+    if(isset($updateButton)) {
         //Create import object, will trigger parsing every source
         $import = new Import();
         //Add all found games to the database
@@ -31,6 +31,13 @@ and open the template in the editor.
             $db->addGame($game);
         }
     }
+    
+    //Get what has been searched, but only if the search button has been pressed
+    $searchString = "";
+    $submitButton = filter_input(INPUT_POST, "submit");
+    if(isset($submitButton)) {
+        $searchString = filter_input(INPUT_POST, "search");
+    }
 ?>
 <html>
     <head>
@@ -38,10 +45,20 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
-        <form method="post"><input type="submit" name="update" value="Update Database"></form>
-        
+        <form method="post">
+            Search: 
+            <input type="text" name="search" value="<?=$searchString?>" />
+            <input type="submit" name="submit" value="Search" />
+            <input type="submit" value="Clear Search" />
+            <input type="submit" name="update" value="Update Database" />
+        </form>
         <?php
+        //Show a set of games depending on if the search was used
+        if(isset($searchString)) {
+            $db->searchGames($searchString);
+        } else {
             $db->printGames();
+        }
         ?>
     </body>
 </html>
