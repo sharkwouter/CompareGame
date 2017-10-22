@@ -54,10 +54,10 @@ and open the template in the editor.
         </form>
         <?php
         //Show a set of games depending on if the search was used
-        if(isset($searchString)) {
-            $db->searchGames($searchString);
-        } else {
+        if(empty($searchString)) {
             $db->printGames();
+        } else {
+            $db->searchGames($searchString);
         }
         ?>
     </body>
