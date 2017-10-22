@@ -16,6 +16,21 @@ and open the template in the editor.
     if(is_file($configFile)) {
         include_once $configFile;
     }
+    
+    //Create database object
+    $db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
+    
+    //Update database if asked
+    $update = filter_input(INPUT_POST, "update");
+    if(isset($update)) {
+        //Create import object, will trigger parsing every source
+        $import = new Import();
+        //Add all found games to the database
+        $games = $import->getGamesList();
+        foreach ($games as $game){
+            $db->addGame($game);
+        }
+    }
 ?>
 <html>
     <head>
@@ -23,21 +38,10 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
+        <form method="post"><input type="submit" name="update" value="Update Database"></form>
+        
         <?php
-        // put your code here
-        $db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
-        
-        $import = new Import();
-
-        $games = $import->getGamesList();
-        
-        foreach ($games as $game){
-            $db->addGame($game);
-        }
-        
-        $db->printGames();
-                
-
+            $db->printGames();
         ?>
     </body>
 </html>
