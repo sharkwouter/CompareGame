@@ -37,7 +37,6 @@ class Database {
     public function addGame(Game $game){
         //Get data from game object
         $data = $game->returnData();
-        
-        
+        $this->queryAddGame->execute($data);
     }
 }
