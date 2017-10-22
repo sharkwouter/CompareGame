@@ -51,4 +51,8 @@ class Import {
         }
         return $gamesList;
     }
+    
+    function uploadData(){
+        
+    }
 }
