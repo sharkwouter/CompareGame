@@ -50,7 +50,7 @@ class Database {
                 break;
             } 
             //Either add or update the database entry based on if it exists already
-            if(isset($exists)) {
+            if($exists) {
                 $this->queryUpdateGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"], $data["link"]));
             } else {
                 $this->queryAddGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
