@@ -23,7 +23,9 @@ class Parser {
     private $urlBase;
     //These will become booleans
     private $hasPages = false;
-    private $duplicateFound = false;
+    //Counter for duplicates
+    private $duplicatesFound = 0;
+    private $maxDuplicates = 5;
     //These will be used for XML
     private $html;
     private $path;
@@ -52,7 +54,7 @@ class Parser {
         $nextpage = $url;
         
         //Parse the given page, quit when there is no next page or we found a duplicate
-        while(!empty($nextpage) && $this->duplicateFound == false) {
+        while(!empty($nextpage) && $this->duplicatesFound < $this->maxDuplicates) {
             $this->parsePage($nextpage);
             if(empty($QueryNextPage)){
                 $nextpage = "";
@@ -154,7 +156,7 @@ class Parser {
     private function isDuplicateGame(Game $new) {
         foreach ($this->gamesList as $game) {
             if ($game->equals($new)) {
-                $this->duplicateFound = true;
+                $this->duplicatesFound += 1;
                 return true;
             }
         }
