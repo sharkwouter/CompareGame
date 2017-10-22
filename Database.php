@@ -19,6 +19,7 @@ class Database {
     //Query attributes
     private $queryAddGame;
     private $queryFindGame;
+    private $queryUpdateGame;
 
     public function __construct(string $dbname, string $dbip, int $dbport, string $dbuser, string $dbpass) {
         try {
@@ -31,6 +32,7 @@ class Database {
         //Prepare queries we may need
         if ($this->connected) {
             $this->queryAddGame = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(?,?,?,?,?)");
+            $this->queryUpdateGame = $this->db->prepare("UPDATE Game SET name=?, price=?, platform=? ,store=?,link=? WHERE link=?");
             $this->queryFindGame = $this->db->prepare("SELECT link FROM Game WHERE link=?");
         }
     }
@@ -40,7 +42,19 @@ class Database {
         $data = $game->returnData();
         //Add the game to the database
         if ($this->connected) {
-            $this->queryAddGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
+            //Check if the game isn't in the database already
+            $exists = false;
+            $this->queryFindGame->execute(array($data["link"]));
+            while($game = $this->queryFindGame->fetch()){
+                $exists = true;
+                break;
+            } 
+            //Either add or update the database entry based on if it exists already
+            if(isset($exists)) {
+                $this->queryUpdateGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"], $data["link"]));
+            } else {
+                $this->queryAddGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
+            }
         }
     }
 
