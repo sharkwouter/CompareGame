@@ -17,62 +17,56 @@ class Parser {
 
     //These will become strings   
     private $store;
-    private $url;
     private $platform;
+    private $products; //Contains the products query
     //These will become booleans
     private $hasPages = false;
+    //These will be used for XML
+    private $html;
+    private $path;
     //These will become arrays
     private $gamesList = array();
     private $queryList = array();
     //Products
     private $productsList;
-    //These are for XML parsing
-    private $html;
-    private $path;
-    //Temp solution platforms
-    private $acceptedPlaforms = array("Xbox One","Gamecube");
 
     //Constructor for single page websites, probably not used much
     public function __construct(string $store, string $platform, string $url, string $QueryProducts, string $QueryName, string $QueryPrice, string $QueryLink, string $QueryNextPage) {
         //Load given variables
         $this->store = $store;
-        $this->url = $url;
+        $this->platform = $platform;
+        $this->products = $QueryProducts;
 
         //Create the queries list
         $this->queryList = array(
             "name" => $QueryName,
             "price" => $QueryPrice,
-            "link" => $QueryLink
+            "link" => $QueryLink,
         );
-
-        //Create objects required for XML parsing, assuming nothing goes wrong
-        $this->html = new DOMDocument();
-        $this->html->loadHTMLFile($this->url);
-        $this->path = new DOMXPath($this->html);
-
-        //Load only what is relevant
-        $products = $this->path->query($QueryProducts);
-
-        //Fill up the productsList with DomXPath objects which contain only 1 product
-        foreach ($products as $product) {
-            $loadHtml = $this->html->saveHTML($product);
-            $dom = new DOMDocument();
-            $dom->loadHTML($loadHtml);
-            $this->productsList [] = new DOMXPath($dom);
-        }
-
-
-        if (in_array($platform, $this->acceptedPlaforms)) {
-            $this->platform = $platform;
-            $this->Parse();
-        } else {
-            echo $platform . " is not a supported console";
+        
+        
+        
+        $nextpage = $url;
+        
+        //Parse the given page
+        while(!empty($nextpage)) {
+            $this->parsePage($nextpage);
+            if(empty($QueryNextPage)){
+                $nextpage = "";
+            } else {
+                $nextpage = $this->getNextURL($QueryNextPage);
+            }
         }
     }
     
     //Generates the game list from the html page
-    public function Parse() {
-        foreach ($this->productsList as $product) {
+    public function parsePage($url) {
+        //Create objects required for XML parsing, assuming nothing goes wrong
+        $this->html = new DOMDocument();
+        $this->html->loadHTMLFile($url);
+        $this->path = new DOMXPath($this->html);
+        
+        foreach ($this->getProductList($this->products) as $product) {
             //Create arry which is used for creating the current game object
             $result = array();
 
@@ -97,7 +91,7 @@ class Parser {
                 }
             }
 
-            //Don't add games with no price to the gamesList
+            //Don't add duplicate games or games with no price to the gamesList
             if ($result ["price"] > 0) {
                 $new = new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]);
                 if (!$this->isDuplicateGame($new)) {
@@ -109,6 +103,34 @@ class Parser {
         }
     }
 
+    //Get a list of XPaths which contain individual products
+    private function getProductList(string $query) {
+        $productList = array();
+
+        //Load only what is relevant
+        $products = $this->path->query($query);        
+
+        //Fill up the productsList with DomXPath objects which contain only 1 product
+        foreach ($products as $product) {
+            $loadHtml = $this->html->saveHTML($product);
+            $dom = new DOMDocument();
+            $dom->loadHTML($loadHtml);
+            $productList [] = new DOMXPath($dom);
+        }
+        return $productList;
+    }
+    
+    private function getNextURL(string $query){
+        //The foreach because sometimes the next page is the last one in a list of links
+        foreach ($this->path->query($query) as $value) {
+           $output = $value;
+        }
+        if(isset($output)) {
+            return $output->getAttribute('href');
+        }
+        return "";
+    }
+    
     public function getGamesList() {
         return $this->gamesList;
     }
