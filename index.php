@@ -12,6 +12,10 @@ and open the template in the editor.
     include_once 'Import.php';
     
     //Load config
+    $configFile = "config.php";
+    if(is_file($configFile)) {
+        include_once $configFile;
+    }
 ?>
 <html>
     <head>
@@ -21,7 +25,7 @@ and open the template in the editor.
     <body>
         <?php
         // put your code here
-        $db = new Database("comparegames", "127.0.0.1", "3306", "root", "");
+        $db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
         
         $import = new Import();
 
