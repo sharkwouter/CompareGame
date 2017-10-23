@@ -20,6 +20,11 @@ class Database {
     private $queryAddGame;
     private $queryFindGame;
     private $queryUpdateGame;
+    
+    //User input
+    private $platformstring;
+    private $orderby;
+    private $orderDesc;
 
     public function __construct(string $dbname, string $dbip, int $dbport, string $dbuser, string $dbpass) {
         try {
@@ -35,6 +40,11 @@ class Database {
             $this->queryUpdateGame = $this->db->prepare("UPDATE Game SET name=?, price=?, platform=? ,store=?,link=? WHERE link=?");
             $this->queryFindGame = $this->db->prepare("SELECT link FROM Game WHERE link=?");
         }
+        
+        //get user input
+        $this->platformstring = filter_input(INPUT_GET, "platform");
+        $this->orderby = filter_input(INPUT_GET, "orderby");
+        $this->orderDesc = filter_input(INPUT_GET, "desc");
     }
 
     public function addGame(Game $game) {
@@ -59,18 +69,17 @@ class Database {
     }
 
     public function searchGames(string $search) {
+        //Set locale for euro
+        setlocale(LC_MONETARY, 'nl_NL');
+        
         if ($this->connected) {
             //Open table for data
             print("<p><table>\n");
-            print("<tr><th>Name</th><th>price</th><th>Platform</th><th>Store</th></tr>\n");
-
-            //Set locale for euro
-            setlocale(LC_MONETARY, 'nl_NL');
-
-            //Get data from database
-            $queyGetGames = $this->db->prepare("SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? ORDER BY Game.name"); //sql statment
-            $queyGetGames->execute(array("%".$search."%"));
-            while ($game = $queyGetGames->fetch()) {
+            print("<tr><th>Name".$this->getOrderLinks("name", $search)."</th><th>price".$this->getOrderLinks("price", $search)."</th><th>Platform".$this->getOrderLinks("platform", $search)."</th><th>Store".$this->getOrderLinks("store", $search)."</th></tr>\n");
+            
+            //Get the sql
+            $result = $this->executeSearch($search);
+            while ($game = $result->fetch()) {
                 print("<tr>\n");
                 print("<td><a href='" . $game["link"] . "'>" . htmlspecialchars($game["name"]) . "</a></td>\n");
                 print("<td>" . money_format('%(#1n', $game["price"]) . "</td>\n");
@@ -85,6 +94,62 @@ class Database {
         }
     }
 
+    private function getOrderLinks(string $field, string $search){
+        return " <a href='index.php?orderby=".$field."&desc=true&search=".$search."'>↑</a> <a href='index.php?orderby=".$field."&search=".$search."'>↓</a>";
+    }
+    
+    //Makes the sql query used when searching and executes it
+    private function executeSearch($search){
+        //base sql query
+        $sqlQuery = "SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ?";
+        
+        //Add platform
+        if(isset($this->platformstring) && $this->platformstring > 0){
+            $sqlQuery = $sqlQuery." AND Platform.id=?";
+        } else {
+            $this->platformstring = "";
+        }
+            
+        //set orderby
+        if(isset($this->orderby)) {
+            switch ($this->orderby) {
+                case "name":
+                    $sqlQuery = $sqlQuery."ORDER BY name";
+                    break;
+                case "price":
+                    $sqlQuery = $sqlQuery."ORDER BY price";
+                    break;
+                case "platform":
+                    $sqlQuery = $sqlQuery."ORDER BY platform";
+                    break;
+                case "store":
+                    $sqlQuery = $sqlQuery."ORDER BY store";
+                    break;
+            }
+        } else {
+            $sqlQuery = $sqlQuery."ORDER BY name,price";
+        }
+        
+        //Set the order to descending or not, sort by name and price after whatever we are sorting on
+        if(isset($this->orderDesc)){
+            $sqlQuery = $sqlQuery." DESC,name,price";
+        } else {
+            $sqlQuery = $sqlQuery.",name,price";
+        }
+
+        //Get data from database
+        $queryGetGames = $this->db->prepare($sqlQuery); //sql statment
+        
+        //Execute sql
+        if(empty($this->platformstring)){
+            $queryGetGames->execute(array("%".$search."%"));
+        } else {
+            $queryGetGames->execute(array("%".$search."%",$this->platformstring));
+        }
+        //Return the result
+        return $queryGetGames;
+    }
+    
     public function printGames() {
         $this->searchGames("");
     }
