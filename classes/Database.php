@@ -75,8 +75,14 @@ class Database {
         if ($this->connected) {
             //Open table for data
             print("<p><table>\n");
-            print("<tr><th>".$this->getOrderLinks("name", $search)."</th><th>".$this->getOrderLinks("price", $search)."</th><th>".$this->getOrderLinks("platform", $search)."</th><th>".$this->getOrderLinks("store", $search)."</th></tr>\n");
             
+            //Print table header with order buttons
+            $fields = array("name","price","platform","store");
+            print("<tr>");
+           foreach ($fields as $field) {
+                print("<th>".$this->getOrderLinks($field, $search)."</th>");
+            }
+            print("</tr>\n");
             //Get the sql
             $result = $this->executeSearch($search);
             while ($game = $result->fetch()) {
@@ -94,6 +100,7 @@ class Database {
         }
     }
 
+    //Generates links for the order in which
     private function getOrderLinks(string $field, string $search){
         return " <a href='index.php?orderby=".$field."&search=".$search."'>↑</a> ". ucfirst($field)." <a href='index.php?orderby=".$field."&desc=true&search=".$search."'>↓</a>";
     }
