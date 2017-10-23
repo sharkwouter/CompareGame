@@ -58,7 +58,7 @@ class Database {
         }
     }
 
-    public function searchGames(string $search) {
+    public function searchGames(int $platform, string $search) {
         if ($this->connected) {
             //Open table for data
             print("<p><table>\n");
@@ -68,7 +68,7 @@ class Database {
             setlocale(LC_MONETARY, 'nl_NL');
 
             //Get data from database
-            $queyGetGames = $this->db->prepare("SELECT name,price,platform,store,link FROM Game WHERE name LIKE ? ORDER BY name"); //sql statment
+            $queyGetGames = $this->db->prepare("SELECT Game.name name,price,Platform.name store,Company.name platform,link FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? ORDER BY Game.name"); //sql statment
             $queyGetGames->execute(array("%".$search."%"));
             while ($game = $queyGetGames->fetch()) {
                 print("<tr>\n");
@@ -85,8 +85,8 @@ class Database {
         }
     }
 
-    public function printGames() {
-        $this->searchGames("");
+    public function printGames(int $platform) {
+        $this->searchGames($platform,"");
     }
 
 }
