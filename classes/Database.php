@@ -75,7 +75,7 @@ class Database {
         if ($this->connected) {
             //Open table for data
             print("<p><table>\n");
-            print("<tr><th>Name".$this->getOrderLinks("name", $search)."</th><th>price".$this->getOrderLinks("price", $search)."</th><th>Platform".$this->getOrderLinks("platform", $search)."</th><th>Store".$this->getOrderLinks("store", $search)."</th></tr>\n");
+            print("<tr><th>".$this->getOrderLinks("name", $search)."</th><th>".$this->getOrderLinks("price", $search)."</th><th>".$this->getOrderLinks("platform", $search)."</th><th>".$this->getOrderLinks("store", $search)."</th></tr>\n");
             
             //Get the sql
             $result = $this->executeSearch($search);
@@ -95,7 +95,7 @@ class Database {
     }
 
     private function getOrderLinks(string $field, string $search){
-        return " <a href='index.php?orderby=".$field."&desc=true&search=".$search."'>↑</a> <a href='index.php?orderby=".$field."&search=".$search."'>↓</a>";
+        return " <a href='index.php?orderby=".$field."&search=".$search."'>↑</a> ". ucfirst($field)." <a href='index.php?orderby=".$field."&desc=true&search=".$search."'>↓</a>";
     }
     
     //Makes the sql query used when searching and executes it
