@@ -6,12 +6,12 @@ and open the template in the editor.
 -->
 <?php
     //Include classes
-    include_once 'Url.php';
-    include_once 'Game.php';
-    include_once 'Database.php';
-    include_once 'Parser.php';
-    include_once 'Import.php';
-    include_once 'Navbar.php';
+    include_once 'classes/Url.php';
+    include_once 'classes/Game.php';
+    include_once 'classes/Database.php';
+    include_once 'classes/Parser.php';
+    include_once 'classes/Import.php';
+    include_once 'classes/Navbar.php';
     
     //Load config
     $configFile = "config.php";
