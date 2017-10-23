@@ -60,4 +60,4 @@ INSERT INTO `Platform` (`name`) VALUES
 INSERT INTO `Parse` (`company`,`platform`,`url`,`product`,`name`,`price`,`link`,`nextpage`) VALUES
 (1, 1, 'tweakers.html', '//tr[@class="largethumb"]', '//a[@class="editionName"]', '//p[@class="price"]/a', '//a[@class="editionName"]', null),
 (2, 1, 'nedgame.html', '//table[@class="productTable"]/tbody/tr', '//td[@class="title"]/div[@class="titlewrapper"]/a/h3', '//td[@class="buy"]/div[@class="koopdiv"]/div[@class="currentprice"]', '//td[@class="title"]/div[@class="titlewrapper"]/a', null),
-(3, 2, 'mariocube.html', '//div[@id="main_midden"]/div[@id="winkelblokl"]|//div[@id="main_midden"]/div[@id="winkelblokr"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//div[@id="wprijs"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', null);
+(3, 2, 'https://www.mariocube.nl/GameCube_Winkel.php?t=Games&p=1', '//div[@id="main_midden"]/div[@id="winkelblokl"]|//div[@id="main_midden"]/div[@id="winkelblokr"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//div[@id="wprijs"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//center//div[@id="kopje"]/a');
