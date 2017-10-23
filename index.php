@@ -11,6 +11,7 @@ and open the template in the editor.
     include_once 'Database.php';
     include_once 'Parser.php';
     include_once 'Import.php';
+    include_once 'Navbar.php';
     
     //Load config
     $configFile = "config.php";
@@ -39,6 +40,9 @@ and open the template in the editor.
     if(isset($submitButton)) {
         $searchString = filter_input(INPUT_POST, "search");
     }
+    
+    //Create navbar object
+    $navbar = new Navbar();
 ?>
 <html>
     <head>
@@ -46,6 +50,7 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
+        <?=$navbar->printNavbar()?>
         <form method="post">
             Search: 
             <input type="text" name="search" value="<?=$searchString?>" />
@@ -56,7 +61,7 @@ and open the template in the editor.
         <?php
         //Show a set of games depending on if the search was used
         if(empty($searchString)) {
-            $db->printGames();
+            $db->printGames(0);
         } else {
             $db->searchGames($searchString);
         }
