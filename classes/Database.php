@@ -58,7 +58,7 @@ class Database {
         }
     }
 
-    public function searchGames(int $platform, string $search) {
+    public function searchGames(string $search) {
         if ($this->connected) {
             //Open table for data
             print("<p><table>\n");
@@ -85,8 +85,8 @@ class Database {
         }
     }
 
-    public function printGames(int $platform) {
-        $this->searchGames($platform,"");
+    public function printGames() {
+        $this->searchGames("");
     }
 
 }
