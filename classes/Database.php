@@ -161,18 +161,26 @@ class Database {
     }
     
     public function printUpdate(){
+        //Open table with header
         print("<table>\n");
-        $fields = array("store","platform","url");
+        $fields = array("store","platform","url","run");
             print("<tr>");
            foreach ($fields as $field) {
                 print("<th>".$field."</th>");
             }
-            print("</tr>");
+            print("</tr>\n");
         //Execute sql
-        $query = $this->db->prepare("SELECT Platform.name platform,Company.name store,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id");
+        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id");
         $query->execute();
         while($parse = $query->fetch()){
-            print("<tr><td>".$parse["store"]."</td><td>".$parse["store"]."</td><td>".$parse["url"]."</td></tr>");
+            print("<tr><td>".$parse["store"]."</td><td>".$parse["store"]."</td><td>".$parse["url"]."</td>\n");
+            //Create run button
+            print("<td><form method='post'>");
+            
+            print("<input type='hidden' name='storeid' value='".$parse["storeid"]."' />");
+            print("<input type='hidden' name='platformid' value='".$parse["platformid"]."' />");
+            print("<input type='submit' value='Run' />");
+            print("</form></td></tr>\n");
         }
     }
 
