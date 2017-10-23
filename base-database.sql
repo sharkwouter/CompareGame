@@ -41,10 +41,12 @@ CREATE TABLE IF NOT EXISTS `comparegames`.`Parse` (
 CREATE TABLE IF NOT EXISTS `comparegames`.`Game` (
   `name` VARCHAR(100) NOT NULL,
   `price` FLOAT NOT NULL,
-  `platform` VARCHAR(64) NOT NULL,
-  `store` VARCHAR(64) NOT NULL,
+  `platform` INT NOT NULL,
+  `store` INT NULL,
   `link` VARCHAR(250) NOT NULL,
-PRIMARY KEY (`link`));
+PRIMARY KEY (`link`),
+FOREIGN KEY (store) REFERENCES Company(id),
+FOREIGN KEY (platform) REFERENCES Platform(id));
 
 
 -- Add some standard data to database
