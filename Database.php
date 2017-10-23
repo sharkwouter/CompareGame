@@ -68,14 +68,14 @@ class Database {
             setlocale(LC_MONETARY, 'nl_NL');
 
             //Get data from database
-            $queyGetGames = $this->db->prepare("SELECT Game.name name,price,Platform.name store,Company.name platform,link FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? ORDER BY Game.name"); //sql statment
+            $queyGetGames = $this->db->prepare("SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? ORDER BY Game.name"); //sql statment
             $queyGetGames->execute(array("%".$search."%"));
             while ($game = $queyGetGames->fetch()) {
                 print("<tr>\n");
                 print("<td><a href='" . $game["link"] . "'>" . htmlspecialchars($game["name"]) . "</a></td>\n");
                 print("<td>" . money_format('%(#1n', $game["price"]) . "</td>\n");
                 print("<td>" . htmlspecialchars($game["platform"]) . "</td>\n");
-                print("<td>" . htmlspecialchars($game["store"]) . "</td>\n");
+                print("<td><a href='" . $game["storelink"] . "'>" . htmlspecialchars($game["store"]) . "</a></td>\n");
                 print("</tr>\n");
             }
             //Close table
