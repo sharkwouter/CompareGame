@@ -46,7 +46,7 @@ $navbar = new Navbar();
 <html>
     <head>
         <meta charset="UTF-8">
-        <title></title>
+        <title>CompareGames</title>
     </head>
     <body>
         <?= $navbar->printNavbar() ?>

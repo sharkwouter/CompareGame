@@ -32,5 +32,6 @@ and open the template in the editor.
     </head>
     <body>
         <?=$navbar->printNavbar()?>
+        <?=$db->printUpdate()?>
     </body>
 </html>

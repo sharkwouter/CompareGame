@@ -67,7 +67,10 @@ class Database {
             }
         }
     }
-
+    public function printGames() {
+        $this->searchGames("");
+    }
+    
     public function searchGames(string $search) {
         //Set locale for euro
         setlocale(LC_MONETARY, 'nl_NL');
@@ -157,8 +160,20 @@ class Database {
         return $queryGetGames;
     }
     
-    public function printGames() {
-        $this->searchGames("");
+    public function printUpdate(){
+        print("<table>\n");
+        $fields = array("store","platform","url");
+            print("<tr>");
+           foreach ($fields as $field) {
+                print("<th>".$field."</th>");
+            }
+            print("</tr>");
+        //Execute sql
+        $query = $this->db->prepare("SELECT Platform.name platform,Company.name store,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id");
+        $query->execute();
+        while($parse = $query->fetch()){
+            print("<tr><td>".$parse["store"]."</td><td>".$parse["store"]."</td><td>".$parse["url"]."</td></tr>");
+        }
     }
 
 }
