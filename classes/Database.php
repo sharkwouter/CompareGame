@@ -176,10 +176,10 @@ class Database {
             }
             print("</tr>\n");
         //Execute sql
-        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id");
+        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
         $query->execute();
         while($parse = $query->fetch()){
-            print("<tr><td>".$parse["store"]."</td><td>".$parse["store"]."</td><td>".$parse["url"]."</td>\n");
+            print("<tr><td>".$parse["store"]."</td><td>".$parse["platform"]."</td><td><a href='".$parse["url"]."'>link</a></td>\n");
             //Create run button
             print("<td><form method='post'>");
             
