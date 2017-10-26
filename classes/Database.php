@@ -19,7 +19,7 @@ class Database {
     //Query attributes
     private $queryAddGame;
     private $queryFindGame;
-    private $queryUpdateGame;
+    private $queryParseData;
     
     //User input
     private $platformstring;
@@ -39,6 +39,7 @@ class Database {
             $this->queryAddGame = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(?,?,?,?,?)");
             $this->queryUpdateGame = $this->db->prepare("UPDATE Game SET name=?, price=?, platform=? ,store=?,link=? WHERE link=?");
             $this->queryFindGame = $this->db->prepare("SELECT link FROM Game WHERE link=?");
+            $this->queryParseData = $this->db->prepare("SELECT company,platform,url, product, name, price, link, nextpage FROM Parse WHERE company=? AND platform=?");
         }
         
         //get user input
@@ -160,6 +161,7 @@ class Database {
         return $queryGetGames;
     }
     
+    //Print the table in update.php
     public function printUpdate(){
         //Open table with header
         print("<table>\n");
@@ -183,5 +185,12 @@ class Database {
             print("</form></td></tr>\n");
         }
     }
-
+    
+    //Get data from the Parse database
+    public function getParseData(int $company, int $platform){
+        $this->queryParseData->execute(array($company,$platform));
+        while($row = $this->queryParseData->fetch()){
+            return $row;
+        }
+    }
 }

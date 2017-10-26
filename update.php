@@ -24,6 +24,10 @@ and open the template in the editor.
 
     //Create navbar object
     $navbar = new Navbar();
+    
+    //Import object for interracting with database
+    $import = new Import($db);
+    
 ?>
 <html>
     <head>
@@ -31,7 +35,17 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
-        <?=$navbar->printNavbar()?>
-        <?=$db->printUpdate()?>
+        <?php
+        $navbar->printNavbar();
+        
+        //Update if shit is set
+        $storeid = filter_input(INPUT_POST, "storeid");
+        $platformid = filter_input(INPUT_POST, "platformid");
+        if(!empty($storeid) && !empty($platformid)){
+            $import->update($storeid,$platformid);
+        }
+        
+        $db->printUpdate();
+        ?>
     </body>
 </html>
