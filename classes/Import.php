@@ -27,6 +27,9 @@ class Import {
         
         //Add the games to the database
         $this->updateDatabase();
+        
+        //Notify user that we tried something, there is no error check yet
+        print("<div class='message'><b>The database has been updated</b></div>");
     }
     
     //Add all games in the gamesList to the database
