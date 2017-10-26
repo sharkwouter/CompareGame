@@ -193,4 +193,30 @@ class Database {
             return $row;
         }
     }
+    
+    //Prints the dropdown for the search form in index.php
+    public function printPlatformDropdown(){
+        //Create empty array
+        $platforms = array();
+        
+        //Get all the platforms with id from the database and add to the array
+        $platformData = $this->db->prepare("SELECT id, name FROM Platform");
+        $platformData->execute();
+        while($platform = $platformData->fetch()){
+            $platforms [$platform["id"]] = $platform["name"];
+        }
+        
+        //Print the dropdown menu itself
+        print("<select name='platform' onchange='this.form.submit()'>\n");
+        print("<option value=0>--</option>\n");
+        foreach($platforms as $id => $name){
+            //Highlight the currently set platform
+            if($this->platformstring == $id) {
+                print("<option selected value='".$id."'>".$name."</option>\n");
+            } else {
+                print("<option value='".$id."'>".$name."</option>\n");
+            }
+        }
+        print("</select>\n");
+    }
 }

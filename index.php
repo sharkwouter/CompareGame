@@ -22,18 +22,6 @@ if (is_file($configFile)) {
 //Create database object
 $db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
 
-//Update database if asked
-//    $updateButton = filter_input(INPUT_POST, "update");
-//    if(isset($updateButton)) {
-//        //Create import object, will trigger parsing every source
-//        $import = new Import();
-//        //Add all found games to the database
-//        $games = $import->getGamesList();
-//        foreach ($games as $game){
-//            $db->addGame($game);
-//        }
-//    }
-
 //Get what has been searched, but only if the search button has been pressed
 $searchString = filter_input(INPUT_GET, "search");
 if(empty($searchString)){
@@ -54,6 +42,7 @@ $navbar = new Navbar();
             <form method="get">
                 Search: 
                 <input type="text" name="search" value="<?= $searchString ?>" />
+                <?php $db->printPlatformDropdown(); ?>
                 <input type="submit" value="Search" />
             </form>
         </div>
