@@ -106,7 +106,11 @@ class Database {
 
     //Generates links for the order in which
     private function getOrderLinks(string $field, string $search){
-        return " <a href='index.php?orderby=".$field."&search=".$search."'>↑</a> ". ucfirst($field)." <a href='index.php?orderby=".$field."&desc=true&search=".$search."'>↓</a>";
+        if(empty($this->platformstring)){
+            return " <a href='index.php?orderby=".$field."&search=".$search."'>↑</a> ". ucfirst($field)." <a href='index.php?orderby=".$field."&desc=true&search=".$search."'>↓</a>";
+         } else {
+            return " <a href='index.php?orderby=".$field."&search=".$search."&platform=".$this->platformstring."'>↑</a> ". ucfirst($field)." <a href='index.php?orderby=".$field."&desc=true&search=".$search."&platform=".$this->platformstring."'>↓</a>";
+        }
     }
     
     //Makes the sql query used when searching and executes it
