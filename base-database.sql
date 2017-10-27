@@ -53,7 +53,8 @@ FOREIGN KEY (platform) REFERENCES Platform(id));
 INSERT INTO `Company` (`name`,`url`) VALUES
 ('Tweakers','https://tweakers.net/'),
 ('Nedgame','https://www.nedgame.nl/'),
-('Mariocube','http://mariocube.nl/');
+('Mariocube','http://mariocube.nl/'),
+('Game Outlet','http://game-outlet.nl/');
 
 INSERT INTO `Platform` (`name`) VALUES
 ('Xbox One'),
@@ -61,5 +62,6 @@ INSERT INTO `Platform` (`name`) VALUES
 
 INSERT INTO `Parse` (`company`,`platform`,`url`,`product`,`name`,`price`,`link`,`nextpage`) VALUES
 (1, 1, 'tweakers.html', '//tr[@class="largethumb"]', '//a[@class="editionName"]', '//p[@class="price"]/a', '//a[@class="editionName"]', null),
-(2, 1, 'nedgame.html', '//table[@class="productTable"]/tbody/tr', '//td[@class="title"]/div[@class="titlewrapper"]/a/h3', '//td[@class="buy"]/div[@class="koopdiv"]/div[@class="currentprice"]', '//td[@class="title"]/div[@class="titlewrapper"]/a', null),
-(3, 2, 'https://www.mariocube.nl/GameCube_Winkel.php?t=Games&p=1', '//div[@id="main_midden"]/div[@id="winkelblokl"]|//div[@id="main_midden"]/div[@id="winkelblokr"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//div[@id="wprijs"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//center//div[@id="kopje"]/a');
+(2, 1, 'https://www.nedgame.nl/xbox-one/games/', '//table[@class="productTable"]/tbody/tr', '//td[@class="title"]/div[@class="titlewrapper"]/a/h3', '//td[@class="buy"]/div[@class="koopdiv"]/div[@class="currentprice"]', '//td[@class="title"]/div[@class="titlewrapper"]/a', '//div[@id="datatablePagination"]/div/span/a'),
+(3, 2, 'https://www.mariocube.nl/GameCube_Winkel.php?t=Games&p=1', '//div[@id="main_midden"]/div[@id="winkelblokl"]|//div[@id="main_midden"]/div[@id="winkelblokr"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//div[@id="wprijs"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//center//div[@id="kopje"]/a'),
+(4, 1, 'http://www.game-outlet.nl/xbox/xbox-one/games-nieuw/?limit=24', '//div[@class="item"]', '//h3[@class="item-name"]', '//span[@class="item-price"]', '//h3[@class="item-name"]/a', '//ul[@class="pagination"]/li/a');
