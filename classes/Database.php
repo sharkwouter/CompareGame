@@ -36,8 +36,8 @@ class Database {
 
         //Prepare queries we may need
         if ($this->connected) {
-            $this->queryAddGame = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(?,?,?,?,?)");
-            $this->queryUpdateGame = $this->db->prepare("UPDATE Game SET name=?, price=?, platform=? ,store=?,link=? WHERE link=?");
+            $this->queryAddGame = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))),?,?,?,?)"); //We don't want random whitespaces in the name
+            $this->queryUpdateGame = $this->db->prepare("UPDATE Game SET name=TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))), price=?, platform=? ,store=?,link=? WHERE link=?"); //again, whitespace filter
             $this->queryFindGame = $this->db->prepare("SELECT link FROM Game WHERE link=?");
             $this->queryParseData = $this->db->prepare("SELECT company,platform,url, product, name, price, link, nextpage FROM Parse WHERE company=? AND platform=?");
         }
@@ -48,6 +48,7 @@ class Database {
         $this->orderDesc = filter_input(INPUT_GET, "desc");
     }
 
+    //Add a game to the database
     public function addGame(Game $game) {
         //Get data from game object
         $data = $game->returnData();
@@ -91,7 +92,7 @@ class Database {
             $result = $this->executeSearch($search);
             while ($game = $result->fetch()) {
                 print("<tr>\n");
-                print("<td><a href='" . $game["link"] . "'>" . htmlspecialchars($game["name"]) . "</a></td>\n");
+                print("<td><a href='" . $game["link"] . "'>" . htmlspecialchars($game["gamename"]) . "</a></td>\n");
                 print("<td>" . money_format('%(#1n', $game["price"]) . "</td>\n");
                 print("<td>" . htmlspecialchars($game["platform"]) . "</td>\n");
                 print("<td><a href='" . $game["storelink"] . "'>" . htmlspecialchars($game["store"]) . "</a></td>\n");
@@ -116,7 +117,7 @@ class Database {
     //Makes the sql query used when searching and executes it
     private function executeSearch($search){
         //base sql query
-        $sqlQuery = "SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ?";
+        $sqlQuery = "SELECT Game.name gamename,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ?";
         
         //Add platform
         if(isset($this->platformstring) && $this->platformstring > 0){
@@ -129,27 +130,27 @@ class Database {
         if(isset($this->orderby)) {
             switch ($this->orderby) {
                 case "name":
-                    $sqlQuery = $sqlQuery."ORDER BY name";
+                    $sqlQuery = $sqlQuery." ORDER BY gamename";
                     break;
                 case "price":
-                    $sqlQuery = $sqlQuery."ORDER BY price";
+                    $sqlQuery = $sqlQuery." ORDER BY price";
                     break;
                 case "platform":
-                    $sqlQuery = $sqlQuery."ORDER BY platform";
+                    $sqlQuery = $sqlQuery." ORDER BY platform";
                     break;
                 case "store":
-                    $sqlQuery = $sqlQuery."ORDER BY store";
+                    $sqlQuery = $sqlQuery." ORDER BY store";
                     break;
             }
         } else {
-            $sqlQuery = $sqlQuery."ORDER BY name,price";
+            $sqlQuery = $sqlQuery." ORDER BY gamename, price";
         }
         
         //Set the order to descending or not, sort by name and price after whatever we are sorting on
         if(isset($this->orderDesc)){
-            $sqlQuery = $sqlQuery." DESC,name,price";
+            $sqlQuery = $sqlQuery." DESC,gamename,price";
         } else {
-            $sqlQuery = $sqlQuery.",name,price";
+            $sqlQuery = $sqlQuery.",gamename,price";
         }
 
         //Get data from database
