@@ -34,7 +34,7 @@ class Import {
 
     //Add all games in the gamesList to the database
     private function addGames($gameList) {
-        foreach ($this->gameList as $game) {
+        foreach ($gameList as $game) {
             $this->db->addGame($game);
         }
     }
