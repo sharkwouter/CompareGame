@@ -84,6 +84,7 @@ $navbar = new Navbar();
         </article>
         <footer>
             <?php
+            //Links for switching pages
             if ($page > 0) {
                 print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . ($page - 1) . "&pagesize=" . $pageSize . "'>previous page</a> ");
             } else {

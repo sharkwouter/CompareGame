@@ -13,7 +13,7 @@
  */
 class Config {
 
-    private $configFile = "config-example.ini";
+    private $configFile = "config.ini";
     private $configData;
     private $failed = false;
 
