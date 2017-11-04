@@ -11,6 +11,8 @@
  *
  * @author wouter
  */
+require_once 'classes/Store.php';
+
 class Game {
 
     //put your code here
@@ -53,7 +55,7 @@ class Game {
         return $data;
     }
 
-    public function printData() : void {
+    public function printData() {
         echo "<p><a href='" . $this->link . "'><h3>" . $this->name . "</h3></a></p>" .
         "Price: " . round($this->price, 2) . "<br>" .
         "platform: " . $this->platform . "<br>" .

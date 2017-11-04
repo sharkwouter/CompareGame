@@ -31,13 +31,13 @@ class Database {
     }
 
     //Print the database error and exit the program! There is no use in continueing without database
-    private function printError(string $error): void {
+    private function printError(string $error) {
         print("<p>An issue has been found: " . $error . "</p>");
         exit();
     }
 
     //Add a game to the database
-    public function addGame(Game $game): void {
+    public function addGame(Game $game) {
         //Get data from game object
         $data = $game->returnData();
 

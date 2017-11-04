@@ -14,7 +14,7 @@ class Import {
     }
 
     //This updates the games in the database for the current store and platform
-    public function update(int $storeid, int $platformid) : void {
+    public function update(int $storeid, int $platformid) {
         //Get the data to give to the parser from the database
         $data = $this->db->getParseData($storeid, $platformid);
 
@@ -33,7 +33,7 @@ class Import {
     }
 
     //Add all games in the gamesList to the database
-    private function addGames($gameList) : void {
+    private function addGames($gameList) {
         foreach ($gameList as $game) {
             $this->db->addGame($game);
         }

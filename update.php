@@ -23,6 +23,12 @@ $import = new Import($GLOBALS['db']);
 //Get ParseDataObjects
 $parseDataObjects = $GLOBALS['db']->getParseDataObjects();
 
+//Update if shit is set
+$storeid = filter_input(INPUT_POST, "storeid");
+$platformid = filter_input(INPUT_POST, "platformid");
+if (!empty($storeid) && !empty($platformid)) {
+    $import->update($storeid, $platformid);
+}
 ?>
 <html>
     <head>
@@ -30,35 +36,30 @@ $parseDataObjects = $GLOBALS['db']->getParseDataObjects();
         <title></title>
     </head>
     <body>
-        <?php
-        $navbar->printNavbar();
-
-        //Update if shit is set
-        $storeid = filter_input(INPUT_POST, "storeid");
-        $platformid = filter_input(INPUT_POST, "platformid");
-        if (!empty($storeid) && !empty($platformid)) {
-            $import->update($storeid, $platformid);
-        }
-
-        print("<table>\n");
-        $fields = array("store", "platform", "url", "run");
-        print("<tr>");
-        foreach ($fields as $field) {
-            print("<th>" . $field . "</th>");
-        }
-        print("</tr>\n");
-
-        foreach($parseDataObjects as $parseDataObject) {
-            $parse = $parseDataObject->getData();
-            print("<tr><td>" . $parse["store"] . "</td><td>" . $parse["platform"] . "</td><td><a href='" . $parse["url"] . "'>link</a></td>\n");
+        <?php $navbar->printNavbar(); ?>
+        <table>
+            <?php
+            //Print table header
+            $fields = array("store", "platform", "url", "run");
+            print("<tr>");
+            foreach ($fields as $field) {
+                print("<th>" . $field . "</th>");
+            }
+            print("</tr>\n");
             
-            //Create run button
-            print("<td><form method='post'>");
-            print("<input type='hidden' name='storeid' value='" . $parse["storeid"] . "' />");
-            print("<input type='hidden' name='platformid' value='" . $parse["platformid"] . "' />");
-            print("<input type='submit' value='Run' />");
-            print("</form></td></tr>\n");
-        }
-        ?>
+            //Print table rows
+            foreach ($parseDataObjects as $parseDataObject) {
+                $parse = $parseDataObject->getData();
+                print("<tr><td>" . $parse["store"] . "</td><td>" . $parse["platform"] . "</td><td><a href='" . $parse["url"] . "'>link</a></td>\n");
+
+                //Create run button
+                print("<td><form method='post'>");
+                print("<input type='hidden' name='storeid' value='" . $parse["storeid"] . "' />");
+                print("<input type='hidden' name='platformid' value='" . $parse["platformid"] . "' />");
+                print("<input type='submit' value='Run' />");
+                print("</form></td></tr>\n");
+            }
+            ?>
+        </table>
     </body>
 </html>
