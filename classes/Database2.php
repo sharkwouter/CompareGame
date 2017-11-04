@@ -65,13 +65,24 @@ class Database {
         }
     }
 
-    //Get data from the Parse table
+    //Get a single entry from the Parse table
     public function getParseData(int $company, int $platform): array {
         $query = $this->db->prepare("SELECT company,platform,url, product, name, price, link, nextpage FROM Parse WHERE company=? AND platform=?");
         $query->execute(array($company, $platform));
         while ($row = $query->fetch()) {
             return $row;
         }
+    }
+    
+    //Get all data from the Parse table
+    public function getParseDataObjects() : array {
+        $parseObjectArray = array();
+        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
+        $query->execute();
+        while ($parse = $query->fetch()) {
+            $parseObjectArray [] = new ParseDataObject($parse);
+        }
+        return $parseObjectArray;
     }
 
     public function searchGames(string $search, int $platform, string $orderBy, int $orderDirection, int $page, int $pageSize): array {
@@ -132,5 +143,4 @@ class Database {
         
         return $platforms;
     }
-
 }

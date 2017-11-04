@@ -5,29 +5,24 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <?php
-    //Include classes
-    include_once 'classes/Url.php';
-    include_once 'classes/Game.php';
-    include_once 'classes/Database.php';
-    include_once 'classes/Parser.php';
-    include_once 'classes/Import.php';
-    include_once 'classes/Navbar.php';
-    
-    //Load config
-    $configFile = "config.php";
-    if(is_file($configFile)) {
-        include_once $configFile;
-    }
-    
-    //Create database object
-    $db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
+//Include classes
+include_once 'base.php';
+include_once 'classes/Url.php';
+include_once 'classes/Game.php';
+include_once 'classes/ParseDataObject.php';
+include_once 'classes/Parser.php';
+include_once 'classes/Import.php';
+include_once 'classes/Navbar.php';
 
-    //Create navbar object
-    $navbar = new Navbar();
-    
-    //Import object for interracting with database
-    $import = new Import($db);
-    
+//Create navbar object
+$navbar = new Navbar();
+
+//Import object for interracting with database
+$import = new Import($GLOBALS['db']);
+
+//Get ParseDataObjects
+$parseDataObjects = $GLOBALS['db']->getParseDataObjects();
+
 ?>
 <html>
     <head>
@@ -37,15 +32,33 @@ and open the template in the editor.
     <body>
         <?php
         $navbar->printNavbar();
-        
+
         //Update if shit is set
         $storeid = filter_input(INPUT_POST, "storeid");
         $platformid = filter_input(INPUT_POST, "platformid");
-        if(!empty($storeid) && !empty($platformid)){
-            $import->update($storeid,$platformid);
+        if (!empty($storeid) && !empty($platformid)) {
+            $import->update($storeid, $platformid);
         }
-        
-        $db->printUpdate();
+
+        print("<table>\n");
+        $fields = array("store", "platform", "url", "run");
+        print("<tr>");
+        foreach ($fields as $field) {
+            print("<th>" . $field . "</th>");
+        }
+        print("</tr>\n");
+
+        foreach($parseDataObjects as $parseDataObject) {
+            $parse = $parseDataObject->getData();
+            print("<tr><td>" . $parse["store"] . "</td><td>" . $parse["platform"] . "</td><td><a href='" . $parse["url"] . "'>link</a></td>\n");
+            
+            //Create run button
+            print("<td><form method='post'>");
+            print("<input type='hidden' name='storeid' value='" . $parse["storeid"] . "' />");
+            print("<input type='hidden' name='platformid' value='" . $parse["platformid"] . "' />");
+            print("<input type='submit' value='Run' />");
+            print("</form></td></tr>\n");
+        }
         ?>
     </body>
 </html>

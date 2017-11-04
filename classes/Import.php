@@ -1,7 +1,7 @@
 <?php
 
 include_once 'classes/Parser.php';
-include_once 'classes/Database.php';
+include_once 'classes/Database2.php';
 
 //This class makes the import happen for all stores
 class Import {
@@ -14,7 +14,7 @@ class Import {
     }
 
     //This updates the games in the database for the current store and platform
-    public function update(int $storeid, int $platformid) {
+    public function update(int $storeid, int $platformid) : void {
         //Get the data to give to the parser from the database
         $data = $this->db->getParseData($storeid, $platformid);
 
@@ -33,7 +33,7 @@ class Import {
     }
 
     //Add all games in the gamesList to the database
-    private function addGames($gameList) {
+    private function addGames($gameList) : void {
         foreach ($gameList as $game) {
             $this->db->addGame($game);
         }
