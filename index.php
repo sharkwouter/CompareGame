@@ -80,5 +80,15 @@ $navbar = new Navbar();
             }
             ?>
         </table>
+        <footer>
+        <?php
+            if($page > 0){
+                print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=".$orderDirection."&page=".($page-1)."&pagesize=".$pageSize."'>previous page</a> "); 
+            } else {
+                print("<u>previous page</u> ");
+            }
+            print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=".$orderDirection."&page=".($page+1)."&pagesize=".$pageSize."'>next page</a> ");
+        ?>
+        </footer>
     </body>
 </html>
