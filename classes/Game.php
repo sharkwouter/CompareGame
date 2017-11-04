@@ -28,7 +28,7 @@ class Game {
         $this->link = $link;
     }
 
-    public function returnSQL(string $table) {
+    public function returnSQL(string $table) : string {
         //Base sql statement
         $sql = "INSERT INTO %table%(name,price,platform,store,link) values(\"%name%\", %price%, \"%platform%\", \"%store%\",\"%link%\")";
 
@@ -42,7 +42,7 @@ class Game {
         return $sql;
     }
 
-    public function returnData() {
+    public function returnData() : array {
         $data = array(
             "name" => $this->name,
             "price" => $this->price,
@@ -53,7 +53,7 @@ class Game {
         return $data;
     }
 
-    public function printData() {
+    public function printData() : void {
         echo "<p><a href='" . $this->link . "'><h3>" . $this->name . "</h3></a></p>" .
         "Price: " . round($this->price, 2) . "<br>" .
         "platform: " . $this->platform . "<br>" .
@@ -61,7 +61,7 @@ class Game {
     }
 
     //Check if this game as the same as another game
-    public function equals(Game $other) {
+    public function equals(Game $other) : bool {
         if (
                 $this->name == $other->name &&
                 $this->price == $other->price &&
