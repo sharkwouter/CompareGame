@@ -19,7 +19,7 @@ $platform = getGetAsInt("platform", 0);
 $orderBy = getGetAsString("orderby", "name");
 $orderDirection = getGetAsInt("order", 0);
 $page = getGetAsInt("page", 0);
-$pageSize = getGetAsInt("pagesize", 20);
+$pageSize = getGetAsInt("pagesize", 30);
 
 //Get the list of games from the database
 $gameList = $GLOBALS['db']->searchGames($searchString, $platform, $orderBy, $orderDirection, $page, $pageSize);
@@ -52,6 +52,8 @@ $navbar = new Navbar();
                     }
                     ?>
                 </select>
+                <input type="hidden" name="orderby" value="<?=$orderBy;?>">
+                <input type="hidden" name="order" value="<?=$orderDirection;?>">
                 <input type="submit" value="Search" />
             </form>
             <table>
