@@ -19,9 +19,11 @@ $platform = getGetAsInt("platform", 0);
 $orderBy = getGetAsString("orderby", "name");
 $orderDirection = getGetAsInt("order", 0);
 $page = getGetAsInt("page", 0);
+$pageSize = getGetAsInt("pagesize", 20);
+print $pageSize;
 
 //Get the list of games from the database
-$gameList = $GLOBALS['db']->searchGames($searchString, $platform, $orderBy, $orderDirection);
+$gameList = $GLOBALS['db']->searchGames($searchString, $platform, $orderBy, $orderDirection, $page, $pageSize);
 
 //Create navbar object
 $navbar = new Navbar();
@@ -70,11 +72,11 @@ $navbar = new Navbar();
                 //Get data from the game object
                 $data = $game->returnData();
                 //Print the table row
-                print("<tr>\n");
-                print("<td><a href='" . $data["link"] . "'>" . htmlspecialchars($data["name"]) . "</a></td>\n");
-                print("<td>&euro;" . sprintf('%01.2f', $data["price"]) . "</td>\n");
-                print("<td>" . htmlspecialchars($data["platform"]) . "</td>\n");
-                print("<td>" . htmlspecialchars($data["store"]) . "</td>\n");
+                print("<tr>");
+                print("<td><a href='" . $data["link"] . "'>" . htmlspecialchars($data["name"]) . "</a></td>");
+                print("<td>&euro;" . sprintf('%01.2f', $data["price"]) . "</td>");
+                print("<td>" . htmlspecialchars($data["platform"]) . "</td>");
+                print("<td>" . htmlspecialchars($data["store"]) . "</td>");
                 print("</tr>\n");
             }
             ?>

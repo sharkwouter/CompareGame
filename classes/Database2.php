@@ -74,12 +74,12 @@ class Database {
         }
     }
 
-    public function searchGames(string $search, int $platform, string $orderBy, int $orderDirection): array {
+    public function searchGames(string $search, int $platform, string $orderBy, int $orderDirection, int $page, int $pageSize): array {
         //Create empty array, will be used as return value
         $gameList = array();
         
         //base sql query
-        $sqlQuery = "SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? %platform% ORDER BY %order%";
+        $sqlQuery = "SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? %platform% ORDER BY %order% LIMIT %limit%";
 
         //Set the string for the sort order direction
         if($orderDirection > 0){
@@ -103,7 +103,10 @@ class Database {
             $sqlQuery = str_replace("%platform%", "", $sqlQuery);
         } else {
             $sqlQuery = str_replace("%platform%", "AND Platform.id=".$platform, $sqlQuery);
-        }     
+        }
+        
+        //Work with pages
+        $sqlQuery = str_replace("%limit%", ($page*$pageSize).",".$pageSize, $sqlQuery);
         
         //Get data from database
         $querySearch = $this->db->prepare($sqlQuery);
