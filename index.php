@@ -20,7 +20,6 @@ $orderBy = getGetAsString("orderby", "name");
 $orderDirection = getGetAsInt("order", 0);
 $page = getGetAsInt("page", 0);
 $pageSize = getGetAsInt("pagesize", 20);
-print $pageSize;
 
 //Get the list of games from the database
 $gameList = $GLOBALS['db']->searchGames($searchString, $platform, $orderBy, $orderDirection, $page, $pageSize);
