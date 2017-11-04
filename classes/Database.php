@@ -15,192 +15,123 @@ class Database {
 
     //Database
     private $db;
-    public $connected = false;
-    //Query attributes
-    private $queryAddGame;
-    private $queryFindGame;
-    private $queryParseData;
-    //User input
-    private $platformstring;
-    private $orderby;
-    private $orderDesc;
 
-    public function __construct(string $dbname, string $dbip, int $dbport, string $dbuser, string $dbpass) {
-        try {
-            $this->db = new PDO("mysql:host=" . $dbip . ";dbname=" . $dbname . ";port=" . $dbport, $dbuser, $dbpass);
-            $this->connected = TRUE;
-        } catch (PDOException $ex) {
-            print("<p><h3>The database connection has failed</h3></p>");
+    public function __construct(array $config) {
+        //Connect to the database if we actually got config data
+        if (!empty($config)) {
+            try {
+                $this->db = new PDO("mysql:host=" . $config["ip"] . ";dbname=" . $config["database"] . ";port=" . $config["port"], $config["username"], $config["password"]);
+                $this->connected = true;
+            } catch (PDOException $ex) {
+                $this->printError("the connection to the database could not be established");
+            }
+        } else {
+            $this->printError("no config data received");
         }
+    }
 
-        //Prepare queries we may need
-        if ($this->connected) {
-            $this->queryAddGame = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))),?,?,?,?)"); //We don't want random whitespaces in the name
-            $this->queryUpdateGame = $this->db->prepare("UPDATE Game SET name=TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))), price=?, platform=? ,store=?,link=? WHERE link=?"); //again, whitespace filter
-            $this->queryFindGame = $this->db->prepare("SELECT link FROM Game WHERE link=?");
-            $this->queryParseData = $this->db->prepare("SELECT company,platform,url, product, name, price, link, nextpage FROM Parse WHERE company=? AND platform=?");
-        }
-
-        //get user input
-        $this->platformstring = filter_input(INPUT_GET, "platform");
-        $this->orderby = filter_input(INPUT_GET, "orderby");
-        $this->orderDesc = filter_input(INPUT_GET, "desc");
+    //Print the database error and exit the program! There is no use in continueing without database
+    private function printError(string $error) {
+        print("<p>An issue has been found: " . $error . "</p>");
+        exit();
     }
 
     //Add a game to the database
     public function addGame(Game $game) {
         //Get data from game object
         $data = $game->returnData();
-        //Add the game to the database
-        if ($this->connected) {
-            //Check if the game isn't in the database already
-            $exists = false;
-            $this->queryFindGame->execute(array($data["link"]));
-            while ($game = $this->queryFindGame->fetch()) {
-                $exists = true;
-                break;
-            }
-            //Either add or update the database entry based on if it exists already
-            if ($exists) {
-                $this->queryUpdateGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"], $data["link"]));
-            } else {
-                $this->queryAddGame->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
-            }
+
+        //Boolean for checking if the game is already in the database
+        $exists = false;
+
+        //TODO: Don't update all existing games
+        //run query to see if the game is already in the database
+        $queryFindGame = $this->db->prepare("SELECT link FROM Game WHERE link=?");
+        $queryFindGame->execute(array($data["link"]));
+
+        //If we find one, sert exists to true
+        while ($game = $queryFindGame->fetch()) {
+            $exists = true;
+            break;
+        }
+
+        //Either add or update the database entry based on if it exists already
+        if ($exists) {
+            $queryAdd = $this->db->prepare("UPDATE Game SET name=TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))), price=?, platform=? ,store=?,link=? WHERE link=?"); //We don't want random whitespaces in the name
+            $queryAdd->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"], $data["link"]));
+        } else {
+            $queryAdd = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))),?,?,?,?)"); //again, whitespace filtersn't in the database already
+            $queryAdd->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
         }
     }
 
-    public function printGames() {
-        $this->searchGames("");
-    }
-
-    public function searchGames(string $search) {
-        //Set locale for euro
-        setlocale(LC_MONETARY, 'nl_NL');
-
-        if ($this->connected) {
-            //Open table for data
-            print("<p><table>\n");
-
-            //Print table header with order buttons
-            $fields = array("name", "price", "platform", "store");
-            print("<tr>");
-            foreach ($fields as $field) {
-                print("<th>" . $this->getOrderLinks($field, $search) . "</th>");
-            }
-            print("</tr>\n");
-            //Get the sql
-            $result = $this->executeSearch($search);
-            while ($game = $result->fetch()) {
-                print("<tr>\n");
-                print("<td><a href='" . $game["link"] . "'>" . htmlspecialchars($game["gamename"]) . "</a></td>\n");
-                print("<td>&euro;" . sprintf('%01.2f', $game["price"]) . "</td>\n");
-                print("<td>" . htmlspecialchars($game["platform"]) . "</td>\n");
-                print("<td><a href='" . $game["storelink"] . "'>" . htmlspecialchars($game["store"]) . "</a></td>\n");
-                print("</tr>\n");
-            }
-            //Close table
-            print("</table></p>\n");
-        } else {
-            print("<p>Couldn't fetch data from database</p>\n");
-        }
-    }
-
-    //Generates links for the order in which
-    private function getOrderLinks(string $field, string $search) {
-        if (empty($this->platformstring)) {
-            return " <a href='index.php?orderby=" . $field . "&search=" . $search . "'>↑</a> " . ucfirst($field) . " <a href='index.php?orderby=" . $field . "&desc=true&search=" . $search . "'>↓</a>";
-        } else {
-            return " <a href='index.php?orderby=" . $field . "&search=" . $search . "&platform=" . $this->platformstring . "'>↑</a> " . ucfirst($field) . " <a href='index.php?orderby=" . $field . "&desc=true&search=" . $search . "&platform=" . $this->platformstring . "'>↓</a>";
-        }
-    }
-
-    //Makes the sql query used when searching and executes it
-    private function executeSearch($search) {
-        //base sql query
-        $sqlQuery = "SELECT Game.name gamename,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ?";
-
-        //Add platform
-        if (isset($this->platformstring) && $this->platformstring > 0) {
-            $sqlQuery = $sqlQuery . " AND Platform.id=?";
-        } else {
-            $this->platformstring = "";
-        }
-
-        //set orderby
-        if (isset($this->orderby)) {
-            switch ($this->orderby) {
-                case "name":
-                    $sqlQuery = $sqlQuery . " ORDER BY gamename";
-                    break;
-                case "price":
-                    $sqlQuery = $sqlQuery . " ORDER BY price";
-                    break;
-                case "platform":
-                    $sqlQuery = $sqlQuery . " ORDER BY platform";
-                    break;
-                case "store":
-                    $sqlQuery = $sqlQuery . " ORDER BY store";
-                    break;
-            }
-        } else {
-            $sqlQuery = $sqlQuery . " ORDER BY gamename, price";
-        }
-
-        //Set the order to descending or not, sort by name and price after whatever we are sorting on
-        if (isset($this->orderDesc)) {
-            $sqlQuery = $sqlQuery . " DESC,gamename,price";
-        } else {
-            $sqlQuery = $sqlQuery . ",gamename,price";
-        }
-
-        //Get data from database
-        $queryGetGames = $this->db->prepare($sqlQuery); //sql statment
-        //Execute sql
-        if (empty($this->platformstring)) {
-            $queryGetGames->execute(array("%" . $search . "%"));
-        } else {
-            $queryGetGames->execute(array("%" . $search . "%", $this->platformstring));
-        }
-        //Return the result
-        return $queryGetGames;
-    }
-
-    //Print the table in update.php
-    public function printUpdate() {
-        //Open table with header
-        print("<table>\n");
-        $fields = array("store", "platform", "url", "run");
-        print("<tr>");
-        foreach ($fields as $field) {
-            print("<th>" . $field . "</th>");
-        }
-        print("</tr>\n");
-        //Execute sql
-        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
-        $query->execute();
-        while ($parse = $query->fetch()) {
-            print("<tr><td>" . $parse["store"] . "</td><td>" . $parse["platform"] . "</td><td><a href='" . $parse["url"] . "'>link</a></td>\n");
-            //Create run button
-            print("<td><form method='post'>");
-
-            print("<input type='hidden' name='storeid' value='" . $parse["storeid"] . "' />");
-            print("<input type='hidden' name='platformid' value='" . $parse["platformid"] . "' />");
-            print("<input type='submit' value='Run' />");
-            print("</form></td></tr>\n");
-        }
-    }
-
-    //Get data from the Parse database
-    public function getParseData(int $company, int $platform) {
-        $this->queryParseData->execute(array($company, $platform));
-        while ($row = $this->queryParseData->fetch()) {
+    //Get a single entry from the Parse table
+    public function getParseData(int $company, int $platform): array {
+        $query = $this->db->prepare("SELECT company,platform,url, product, name, price, link, nextpage FROM Parse WHERE company=? AND platform=?");
+        $query->execute(array($company, $platform));
+        while ($row = $query->fetch()) {
             return $row;
         }
     }
+    
+    //Get all data from the Parse table
+    public function getParseDataObjects() : array {
+        $parseObjectArray = array();
+        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
+        $query->execute();
+        while ($parse = $query->fetch()) {
+            $parseObjectArray [] = new ParseDataObject($parse);
+        }
+        return $parseObjectArray;
+    }
 
-    //Prints the dropdown for the search form in index.php
-    public function printPlatformDropdown() {
-        //Create empty array
+    public function searchGames(string $search, int $platform, string $orderBy, int $orderDirection, int $page, int $pageSize): array {
+        //Create empty array, will be used as return value
+        $gameList = array();
+        
+        //base sql query
+        $sqlQuery = "SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? %platform% ORDER BY %order% LIMIT %limit%";
+
+        //Set the string for the sort order direction
+        if($orderDirection > 0){
+            $orderDirectionString = "DESC";
+        } else {
+            $orderDirectionString = "ASC";
+        }
+        
+        //Contains all fields which can be sorted on, just to prevent injection
+        $canOrderOn = ["name","price","platform","store","link"];
+        
+        //replace %order% in the sql query, comes after ORDER BY
+        if(!empty($orderBy) && in_array($orderBy, $canOrderOn)){
+            $sqlQuery = str_replace("%order%", $orderBy." ".$orderDirectionString.", name, price", $sqlQuery);
+        } else {
+            $sqlQuery = str_replace("%order%", "name, price", $sqlQuery);
+        }
+        
+        //replace %platform% in the sql query, comes after ORDER BY
+        if ($platform === 0) {
+            $sqlQuery = str_replace("%platform%", "", $sqlQuery);
+        } else {
+            $sqlQuery = str_replace("%platform%", "AND Platform.id=".$platform, $sqlQuery);
+        }
+        
+        //Work with pages
+        $sqlQuery = str_replace("%limit%", ($page*$pageSize).",".$pageSize, $sqlQuery);
+        
+        //Get data from database
+        $querySearch = $this->db->prepare($sqlQuery);
+        $querySearch->execute(array("%" . $search . "%"));
+        
+        //Add games
+        while($game = $querySearch->fetch()){
+            $gameList [] = new Game($game["name"], $game["price"], $game["platform"], $game["store"], $game["link"]);
+        }
+        
+        return $gameList;
+    }
+    
+    public function getPlatformList() : array {
         $platforms = array();
 
         //Get all the platforms with id from the database and add to the array
@@ -209,24 +140,7 @@ class Database {
         while ($platform = $platformData->fetch()) {
             $platforms [$platform["id"]] = $platform["name"];
         }
-
-        //Print the dropdown menu itself
-        print("<select name='platform' onchange='this.form.submit()'>\n");
-        print("<option value=0>--</option>\n");
-        foreach ($platforms as $id => $name) {
-            //Highlight the currently set platform
-            if ($this->platformstring == $id) {
-                print("<option selected value='" . $id . "'>" . $name . "</option>\n");
-            } else {
-                print("<option value='" . $id . "'>" . $name . "</option>\n");
-            }
-        }
-        print("</select>\n");
-    }
-
-    //Remove bullshit from database
-    public function cleanGameNames(string $toRemove) {
-        $query = $this->db->prepare("UPDATE Game SET name=TRIM((REPLACE(REPLACE(REPLACE(name, ?, ''),'\t',''),'\n','')))");
-        $query->execute(array($toRemove));
+        
+        return $platforms;
     }
 }

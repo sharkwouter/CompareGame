@@ -1,7 +1,7 @@
 <?php
 
 include_once 'classes/Parser.php';
-include_once 'classes/Database2.php';
+include_once 'classes/Database.php';
 
 //This class makes the import happen for all stores
 class Import {
