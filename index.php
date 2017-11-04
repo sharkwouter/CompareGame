@@ -60,6 +60,7 @@ $navbar = new Navbar();
             $fields = array("name", "price", "platform", "store");
             print("<tr>");
             foreach ($fields as $field) {
+                //These headers include buttons which allow for sorting
                 print("<th><a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $field . "&order=0'>↑</a> " . ucfirst($field) . " <a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $field . "&order=1'>↓</a></th>");
             }
             print("</tr>\n");
