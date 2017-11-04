@@ -6,27 +6,22 @@ and open the template in the editor.
 -->
 <?php
 //Include classes
+include_once 'base.php';
 include_once 'classes/Url.php';
 include_once 'classes/Game.php';
-include_once 'classes/Database.php';
 include_once 'classes/Parser.php';
-include_once 'classes/Import.php';
+//include_once 'classes/Import.php';
 include_once 'classes/Navbar.php';
 
-//Load config
-$configFile = "config.php";
-if (is_file($configFile)) {
-    include_once $configFile;
-}
+//Get get data
+$searchString = getGetAsString("search", "");
+$platform = getGetAsInt("platform", 0);
+$orderBy = getGetAsString("orderby", "name");
+$orderDirection = getGetAsInt("order", 0);
+$page = getGetAsInt("page", 0);
 
-//Create database object
-$db = new Database($dbname, $dbip, $dbport, $dbuser, $dbpass);
-
-//Get what has been searched, but only if the search button has been pressed
-$searchString = filter_input(INPUT_GET, "search");
-if(empty($searchString)){
-    $searchString = "";
-}
+//Get the list of games from the database
+$gameList = $GLOBALS['db']->searchGames($searchString, $platform, $orderBy, $orderDirection);
 
 //Create navbar object
 $navbar = new Navbar();
@@ -42,13 +37,46 @@ $navbar = new Navbar();
             <form method="get">
                 Search: 
                 <input type="text" name="search" value="<?= $searchString ?>" />
-                <?php $db->printPlatformDropdown(); ?>
+                <select name='platform' onchange='this.form.submit()'>
+                    <option value=0>--</option>
+                    <?php
+                    //print full list
+                    foreach ($GLOBALS['db']->getPlatformList() as $id => $name) {
+                        //Highlight the currently set platform
+                        if ($platform == $id) {
+                            print("<option selected value='" . $id . "'>" . $name . "</option>\n");
+                        } else {
+                            print("<option value='" . $id . "'>" . $name . "</option>\n");
+                        }
+                    }
+                    ?>
+                </select>
                 <input type="submit" value="Search" />
             </form>
         </div>
-        <?php
-        //Show a set of games depending on if the search was used
-        $db->searchGames($searchString);
-        ?>
+        <table>
+            <?php
+            //Print table header with order buttons
+            $fields = array("name", "price", "platform", "store");
+            print("<tr>");
+            foreach ($fields as $field) {
+                print("<th><a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $field . "&order=0'>↑</a> " . ucfirst($field) . " <a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $field . "&order=1'>↓</a></th>");
+            }
+            print("</tr>\n");
+
+            //Show a set of games depending on if the search was used
+            foreach ($gameList as $game) {
+                //Get data from the game object
+                $data = $game->returnData();
+                //Print the table row
+                print("<tr>\n");
+                print("<td><a href='" . $data["link"] . "'>" . htmlspecialchars($data["name"]) . "</a></td>\n");
+                print("<td>&euro;" . sprintf('%01.2f', $data["price"]) . "</td>\n");
+                print("<td>" . htmlspecialchars($data["platform"]) . "</td>\n");
+                print("<td>" . htmlspecialchars($data["store"]) . "</td>\n");
+                print("</tr>\n");
+            }
+            ?>
+        </table>
     </body>
 </html>
