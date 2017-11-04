@@ -71,7 +71,7 @@ $navbar = new Navbar();
                     $data = $game->returnData();
                     //Print the table row
                     print("<tr>");
-                    print("<td><a href='" . $data["link"] . "'>" . htmlspecialchars($data["name"]) . "</a></td>");
+                    print("<td><a href='" . $data["link"] . "' target='_blank'>" . htmlspecialchars($data["name"]) . "</a></td>");
                     print("<td>&euro;" . sprintf('%01.2f', $data["price"]) . "</td>");
                     print("<td>" . htmlspecialchars($data["platform"]) . "</td>");
                     print("<td>" . htmlspecialchars($data["store"]) . "</td>");
