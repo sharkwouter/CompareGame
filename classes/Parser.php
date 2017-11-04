@@ -6,8 +6,9 @@
  * and open the template in the editor.
  */
 
-include_once 'Url.php';
-include_once 'Game.php';
+require_once 'classes/Url.php';
+require_once 'classes/Store.php';
+require_once 'classes/Game.php';
 
 /**
  * Description of Parser
