@@ -40,7 +40,7 @@ if (!empty($storeid) && !empty($platformid)) {
         <table>
             <?php
             //Print table header
-            $fields = array("store", "platform", "url", "run");
+            $fields = array("store", "platform", "url", "run","last update");
             print("<tr>");
             foreach ($fields as $field) {
                 print("<th>" . $field . "</th>");
@@ -57,7 +57,12 @@ if (!empty($storeid) && !empty($platformid)) {
                 print("<input type='hidden' name='storeid' value='" . $parse["storeid"] . "' />");
                 print("<input type='hidden' name='platformid' value='" . $parse["platformid"] . "' />");
                 print("<input type='submit' value='Run' />");
-                print("</form></td></tr>\n");
+                print("</form></td>\n");
+                
+                print("<td>".$parseDataObject->getLastUpdate()."</td>");
+                
+                //close table row
+                print("</tr>");
             }
             ?>
         </table>

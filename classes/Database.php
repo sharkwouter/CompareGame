@@ -77,12 +77,17 @@ class Database {
     //Get all data from the Parse table
     public function getParseDataObjects() : array {
         $parseObjectArray = array();
-        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
+        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage,lastupdate FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
         $query->execute();
         while ($parse = $query->fetch()) {
             $parseObjectArray [] = new ParseDataObject($parse);
         }
         return $parseObjectArray;
+    }
+    
+    public function updateParseTimestamp(int $company, int $platform){
+        $query = $this->db->prepare("UPDATE Parse SET lastupdate = NOW() WHERE company=? AND platform=?");
+        $query->execute(array($company, $platform));
     }
 
     //This function allows us to get the query how many pages we need

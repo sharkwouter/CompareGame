@@ -22,6 +22,9 @@ class Import {
         if (!empty($data)) {
             $parser = new Parser($data["company"], $data["platform"], new URL($data["url"]), $data["product"], $data["name"], $data["price"], $data["link"], $data["nextpage"]);
 
+            //Update the timestamp on in the Parse database
+            $this->db->updateParseTimestamp($storeid, $platformid);
+            
             //Add the games to the database
             $this->addGames($parser->getGamesList());
 

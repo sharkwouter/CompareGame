@@ -13,7 +13,7 @@
  */
 class ParseDataObject {
      private $data = array();
-     private $expectedData = array("storeid","store","platformid","platform","url");
+     private $expectedData = array("storeid","store","platformid","platform","url","lastupdate");
     
     public function __construct($data) {
         //Temporary variables
@@ -47,5 +47,14 @@ class ParseDataObject {
     
     public function getUrl() : string {
         return "".$this->data["url"];
+    }
+    
+    public function getLastUpdate() {
+        if(empty($this->data["lastupdate"])) {
+            return "never";
+        }
+        $difference = round((date_create()->format('U') - strtotime($this->data["lastupdate"]))/3600);
+        
+        return $difference." hour(s) ago";
     }
 }

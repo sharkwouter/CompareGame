@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `comparegames`.`Parse` (
     `price` VARCHAR(255) NOT NULL,
     `link` VARCHAR(255) NOT NULL,
     `nextpage` VARCHAR(255) NOT NULL DEFAULT '',
+    `lastupdate` DATETIME NULL,
     PRIMARY KEY (`company`,`platform`),
     FOREIGN KEY (company) REFERENCES Company(id),
     FOREIGN KEY (platform) REFERENCES Platform(id));
