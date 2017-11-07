@@ -23,7 +23,6 @@ $pageSize = getGetAsInt("pagesize", 30);
 
 //Calculate the amount of pages
 $SearchResultAmount = $GLOBALS["db"]->getSearchResultAmount($searchString, $platform);
-print($SearchResultAmount);
 $pageAmount = ((int) ($SearchResultAmount/$pageSize))+1; //TODO: fix devide by zero issue
 
 //Get the list of games from the database
