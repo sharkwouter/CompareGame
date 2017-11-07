@@ -26,7 +26,7 @@ class Parser {
     private $hasPages = false;
     //Counter for duplicates
     private $duplicatesFound = 0;
-    private $maxDuplicates = 5;
+    private $maxDuplicates = 1;
     //These will be used for XML
     private $html;
     private $path;
