@@ -14,7 +14,7 @@ function getGetAsInt(string $name, int $default) : int {
     $int = (int)filter_input(INPUT_GET, $name, FILTER_VALIDATE_INT);
     
     //Check if int isn't false
-    if($int == false){
+    if($int == false || $int < 0){
         return $default;
     }
     return $int;
