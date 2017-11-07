@@ -90,7 +90,7 @@ $navbar = new Navbar();
             <?php
             //Links for switching pages
             //Previous link
-            if ($page > 0) {
+            if ($page > 1) {
                 print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . ($page - 1) . "&pagesize=" . $pageSize . "'>previous page</a> ");
             } else {
                 print("<u>previous page</u> ");
@@ -99,7 +99,7 @@ $navbar = new Navbar();
             //Links for all other pages, up to 
             foreach(range(1,$pageAmount) as $p){
                 if($p == $page){
-                    print("<b>".$p."</b> ");
+                    print("<b><u>".$p."</u></b> ");
                 } else {
                     print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . $p . "&pagesize=" . $pageSize . "'>".$p."</a> ");
                 }
