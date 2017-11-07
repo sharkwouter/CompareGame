@@ -85,6 +85,25 @@ class Database {
         return $parseObjectArray;
     }
 
+    //This function allows us to get the query how many pages we need
+    public function getSearchResultAmount(string $search, int $platform) : int {
+        $sqlQuery = "SELECT COUNT(*) amount FROM Game WHERE name LIKE ? %platform%";
+        //replace %platform% in the sql query, comes after ORDER BY
+        if ($platform === 0) {
+            $sqlQuery = str_replace("%platform%", "", $sqlQuery);
+        } else {
+            $sqlQuery = str_replace("%platform%", "AND platform=".$platform, $sqlQuery);
+        }
+        
+        //Get amount from database
+        $queryPages = $this->db->prepare($sqlQuery);
+        $queryPages->execute(array("%" . $search . "%"));
+        $data = $queryPages->fetch();
+        
+        //We assume it can be converted to an int, since we only use the result of count
+        return (int) $data["amount"];
+    }
+    
     public function searchGames(string $search, int $platform, string $orderBy, int $orderDirection, int $page, int $pageSize): array {
         //Create empty array, will be used as return value
         $gameList = array();
@@ -117,7 +136,7 @@ class Database {
         }
         
         //Work with pages
-        $sqlQuery = str_replace("%limit%", ($page*$pageSize).",".$pageSize, $sqlQuery);
+        $sqlQuery = str_replace("%limit%", (($page-1)*$pageSize).",".$pageSize, $sqlQuery);
         
         //Get data from database
         $querySearch = $this->db->prepare($sqlQuery);

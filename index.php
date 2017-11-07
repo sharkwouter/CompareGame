@@ -18,8 +18,13 @@ $searchString = getGetAsString("search", "");
 $platform = getGetAsInt("platform", 0);
 $orderBy = getGetAsString("orderby", "name");
 $orderDirection = getGetAsInt("order", 0);
-$page = getGetAsInt("page", 0);
+$page = getGetAsInt("page", 1);
 $pageSize = getGetAsInt("pagesize", 30);
+
+//Calculate the amount of pages
+$SearchResultAmount = $GLOBALS["db"]->getSearchResultAmount($searchString, $platform);
+print($SearchResultAmount);
+$pageAmount = ((int) ($SearchResultAmount/$pageSize))+1; //TODO: fix devide by zero issue
 
 //Get the list of games from the database
 $gameList = $GLOBALS['db']->searchGames($searchString, $platform, $orderBy, $orderDirection, $page, $pageSize);
@@ -85,12 +90,28 @@ $navbar = new Navbar();
         <footer>
             <?php
             //Links for switching pages
+            //Previous link
             if ($page > 0) {
                 print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . ($page - 1) . "&pagesize=" . $pageSize . "'>previous page</a> ");
             } else {
                 print("<u>previous page</u> ");
             }
-            print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . ($page + 1) . "&pagesize=" . $pageSize . "'>next page</a> ");
+            
+            //Links for all other pages, up to 
+            foreach(range(1,$pageAmount) as $p){
+                if($p == $page){
+                    print("<b>".$p."</b> ");
+                } else {
+                    print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . $p . "&pagesize=" . $pageSize . "'>".$p."</a> ");
+                }
+            }
+            
+            //Next link
+            if ($page < $pageAmount) {
+                print("<a href='index.php?search=" . $searchString . "&platform=" . $platform . "&orderby=" . $orderBy . "&order=" . $orderDirection . "&page=" . ($page + 1) . "&pagesize=" . $pageSize . "'>next page</a> ");
+            } else {
+                print("<u>next page</u> ");
+            }
             ?>
         </footer>
     </body>
