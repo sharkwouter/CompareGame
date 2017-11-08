@@ -55,6 +55,7 @@ class Game {
         return $data;
     }
 
+    //Only used for debugging
     public function printData() {
         echo "<p><a href='" . $this->link . "'><h3>" . $this->name . "</h3></a></p>" .
         "Price: " . round($this->price, 2) . "<br>" .
