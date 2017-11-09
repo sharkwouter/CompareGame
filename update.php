@@ -20,15 +20,15 @@ $navbar = new Navbar();
 //Import object for interracting with database
 $import = new Import($GLOBALS['db']);
 
-//Get ParseDataObjects
-$parseDataObjects = $GLOBALS['db']->getParseDataObjects();
-
 //Update if shit is set
 $storeid = filter_input(INPUT_POST, "storeid");
 $platformid = filter_input(INPUT_POST, "platformid");
 if (!empty($storeid) && !empty($platformid)) {
     $import->update($storeid, $platformid);
 }
+
+//Get ParseDataObjects
+$parseDataObjects = $GLOBALS['db']->getParseDataObjects();
 ?>
 <html>
     <head>
