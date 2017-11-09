@@ -181,4 +181,20 @@ class Database {
         
         return $storeArray;
     }
+    
+    public function addStore(Store $store) {
+        $storeQuery = $this->db->prepare("INSERT INTO Company(name,url) VALUES(?,?)");
+        $storeQuery->execute(array($store,$store->getUrl()));
+    }
+    
+    public function removeStore(int $id){
+        $removeGamesQuery = $this->db->prepare("DELETE FROM Game WHERE store=?");
+        $removeGamesQuery->execute(array($id));
+        
+        $removeParseQuery = $this->db->prepare("DELETE FROM Parse WHERE company=?");
+        $removeParseQuery->execute(array($id));
+        
+        $removeStoreQuery = $this->db->prepare("DELETE FROM Company WHERE id=?");
+        $removeStoreQuery->execute(array($id));
+    }
 }

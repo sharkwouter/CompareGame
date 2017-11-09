@@ -13,9 +13,20 @@ include_once 'classes/Store.php';
 //Create navbar object
 $navbar = new Navbar();
 
+//Get the post data
+$toRemove = filter_input(INPUT_POST, "toremove");
+$addName = filter_input(INPUT_POST, "name");
+$addLink = filter_input(INPUT_POST, "link");
+
+if(!empty($toRemove)){
+    $GLOBALS["db"]->removeStore((int) $toRemove);
+}
+if(!empty($addName) && !empty($addLink)){
+    $GLOBALS["db"]->addStore(new Store($addName,new Url($addLink)));
+}
+
 //Get all the stores
 $stores = $GLOBALS["db"]->getStores();
-
 ?>
 <html>
     <head>
