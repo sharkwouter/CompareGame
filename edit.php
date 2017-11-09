@@ -27,10 +27,8 @@ $parseDataObjects = $GLOBALS["db"]->getParseDataObjects();
             <tr><th>Store</th><th>XML Paths</th><th>Submit</th></tr>
             <?php
             foreach ($parseDataObjects as $p) {
-                $data = $p->getData();
-                ?>
-
-            <tr>
+                $data = $p->getData();?>
+              <tr>
                 <td>
                     <b><?=$data["store"]?></b><br>
                     <?=$data["platform"]?><br>
@@ -40,7 +38,7 @@ $parseDataObjects = $GLOBALS["db"]->getParseDataObjects();
                     <table>
                         <tr>
                             <td>Url:</td>
-                            <td><input name="url" value="<?=$data["url"]?>"></td>
+                            <td><input name="url" value="<?=htmlspecialchars($data["url"])?>"></td>
                         </tr>
                         <tr>
                             <td>Product query:</td>
