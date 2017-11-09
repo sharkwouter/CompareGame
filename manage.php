@@ -20,13 +20,13 @@ $stores = $GLOBALS["db"]->getStores();
 <html>
     <head>
         <meta charset="UTF-8">
-        <title></title>
+        <title>Manage Stores</title>
     </head>
     <body>
         <?= $navbar->printNavbar() ?>
         <h2>Manage Stores</h2>
-        <h3>Add Stores</h3>
-        <form>
+        <h3>Add Store</h3>
+        <form method="post">
             <table>
                 <tr><td>Name</td><td><input type="text" name="name" value="" /></td></tr>
                 <tr><td>Link</td><td><input type="text" name="link" value="" /></td></tr>
@@ -34,12 +34,16 @@ $stores = $GLOBALS["db"]->getStores();
             </table>
         </form>
         
-        <h3>Manage stores</h3>
+        <h3>Stores</h3>
         <table>
-            <tr><th>Store</th><th>Remove</th></tr>
+            <tr><th>Store</th><th>Link</th><th>Remove</th></tr>
             <?php
                 foreach($stores as $store){
-                    print("<tr><td><a href='".$store->getUrl()."'>".$store."</a></td><td><form><input type='submit' name='".$store."' value='Remove' /></form></td></tr>\n");
+                    print("<tr>\n");
+                    print("<td>".$store."</td>\n<td><a href='".$store->getUrl()."'>".htmlspecialchars($store->getUrl())."</a></td>\n");
+                    //Remove button:
+                    print("<td><form method='post'><input type='hidden' name='toremove' value='".$store->getId()."'><input type='submit' value='Remove'></form></td>\n");
+                    print("</tr>\n");
                 }
             ?>
         </table>

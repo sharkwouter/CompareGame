@@ -17,10 +17,23 @@ require_once 'classes/Url.php';
 class Store {
     private $name;
     private $url;
+    private $id;
     
     public function __construct(string $name, Url $url){
         $this->name = $name;
         $this->url = $url;
+    }
+    
+    public function setId(int $id){
+        $this->id = $id;
+    }
+    
+    //Returns -1 if id is not set
+    public function getId() : int{
+        if(isset($this->id)){
+            return $this->id;
+        }
+        return -1;
     }
     
     public function getUrl() : url {

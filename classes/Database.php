@@ -174,7 +174,9 @@ class Database {
         $storeQuery = $this->db->prepare("SELECT id, name, url FROM Company");
         $storeQuery->execute();
         while($store = $storeQuery->fetch()){
-            $storeArray [] = new Store($store["name"],new Url($store["url"]));
+            $storeObject = new Store($store["name"],new Url($store["url"]));
+            $storeObject->setId((int) $store["id"]); //Set the id, since this is not set by the constructor of a Store object
+            $storeArray [] = $storeObject;
         }
         
         return $storeArray;
