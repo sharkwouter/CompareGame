@@ -77,7 +77,7 @@ class Database {
     //Get all data from the Parse table
     public function getParseDataObjects() : array {
         $parseObjectArray = array();
-        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product,Parse.name,Parse.price,Parse.link,Parse.nextpage,lastupdate FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
+        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product product,Parse.name name,Parse.price price,Parse.link link,Parse.nextpage nextpage,lastupdate FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
         $query->execute();
         while ($parse = $query->fetch()) {
             $parseObjectArray [] = new ParseDataObject($parse);
