@@ -40,27 +40,27 @@ $parseDataObjects = $GLOBALS["db"]->getParseDataObjects();
                     <table>
                         <tr>
                             <td>Url:</td>
-                            <td><input name="url"></td>
+                            <td><input name="url" value="<?=$data["url"]?>"></td>
                         </tr>
                         <tr>
                             <td>Product query:</td>
-                            <td><input name="product"></td>
+                            <td><input name="product" value="<?=htmlspecialchars($data["product"])?>"></td>
                         </tr>
                         <tr>
                             <td>Name query:</td>
-                            <td><input name="name"></td>
+                            <td><input name="name" value="<?=htmlspecialchars($data["name"])?>"></td>
                         </tr>
                         <tr>
                             <td>Price query:</td>
-                            <td><input name="price"></td>
+                            <td><input name="price" value="<?=htmlspecialchars($data["price"])?>"></td>
                         </tr>
                         <tr>
                             <td>Link query:</td>
-                            <td><input name="link"></td>
+                            <td><input name="link" value="<?=htmlspecialchars($data["link"])?>"></td>
                         </tr>
                         <tr>
                             <td>Next page query:</td>
-                            <td><input name="nextpage"></td>
+                            <td><input name="nextpage"  value="<?=htmlspecialchars($data["nextpage"])?>"></td>
                         </tr>
                     </table>
                 </td>

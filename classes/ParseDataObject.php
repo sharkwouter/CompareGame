@@ -13,7 +13,7 @@
  */
 class ParseDataObject {
      private $data = array();
-     private $expectedData = array("storeid","store","platformid","platform","url","product","name","link","nextpage","lastupdate");
+     private $expectedData = array("storeid","store","platformid","platform","url","product","name","price","link","nextpage","lastupdate");
     
     public function __construct($data) {
         //Temporary variables
