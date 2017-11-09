@@ -167,4 +167,16 @@ class Database {
         
         return $platforms;
     }
+    
+    public function getStores() : array {
+        $storeArray = array();
+        
+        $storeQuery = $this->db->prepare("SELECT id, name, url FROM Company");
+        $storeQuery->execute();
+        while($store = $storeQuery->fetch()){
+            $storeArray [] = new Store($store["name"],new Url($store["url"]));
+        }
+        
+        return $storeArray;
+    }
 }
