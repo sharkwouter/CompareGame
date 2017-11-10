@@ -47,7 +47,7 @@ if (!empty($selectedStore) && !empty($selectedPlatform)) {
 <html>
     <head>
         <meta charset="UTF-8">
-        <title></title>
+        <title>Edit</title>
     </head>
     <body>
         <?= $navbar->printNavbar() ?>
