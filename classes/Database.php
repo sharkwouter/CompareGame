@@ -162,7 +162,7 @@ class Database {
 
         //Add games
         while ($game = $querySearch->fetch()) {
-            $gameList [] = new Game($game["name"], $game["price"], $game["platformid"], $game["storeid"], $game["link"]);
+            $gameList [] = new Game($game["name"], $game["price"], $game["platform"], $game["store"], $game["link"]);
         }
 
         return $gameList;

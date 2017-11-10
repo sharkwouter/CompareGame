@@ -132,7 +132,7 @@ class Parser {
         foreach ($this->path->query($query) as $value) {
            $output = $value->getAttribute('href');
         }
-        if(isset($output) && !strstr($output, $this->urlBase)) {
+        if(!empty($output) && !strstr($output, $this->urlBase)) {
             $output = $this->urlBase."/".$output;
         }
         return $output;
