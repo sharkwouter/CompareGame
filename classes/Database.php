@@ -181,6 +181,16 @@ class Database {
         return $platforms;
     }
 
+    public function addPlatform(string $name){
+        $query = $this->db->prepare("INSERT INTO Platform(name) VALUES(?)");
+        $query->execute(array($name));
+    }
+    
+    public function removePlatform(int $id){
+        $query = $this->db->prepare("DELETE FROM Platform WHERE id=?");
+        $query->execute(array($id));
+    }
+    
     public function getStores(): array {
         $storeArray = array();
 
