@@ -13,7 +13,7 @@
  */
 class Navbar {
     //List with items
-    private $items = array("Home" => "index.php", "Manage" => "manage.php", "Edit" => "edit.php", "Update" => "update.php");
+    private $items = array("Home" => "index.php",  "Edit" => "edit.php", "Update" => "update.php", "Stores" => "stores.php", "Platforms" => "platforms.php");
 
     public function printNavbar(){
         echo "<nav>\n|";
