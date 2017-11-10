@@ -54,7 +54,8 @@ FOREIGN KEY (platformid) REFERENCES Platform(id));
 INSERT INTO `Store` (`name`,`url`) VALUES
 ('Nedgame','https://www.nedgame.nl/'),
 ('Mariocube','http://mariocube.nl/'),
-('Game Outlet','http://game-outlet.nl/');
+('Game Outlet','http://game-outlet.nl/'),
+('Intertoys','https://www.intertoys.nl/');
 
 INSERT INTO `Platform` (`name`) VALUES
 ('Xbox One'),
@@ -63,4 +64,5 @@ INSERT INTO `Platform` (`name`) VALUES
 INSERT INTO `Parse` (`storeid`,`platformid`,`url`,`product`,`name`,`price`,`link`,`nextpage`) VALUES
 (1, 1, 'https://www.nedgame.nl/xbox-one/games/', '//table[@class="productTable"]/tbody/tr', '//td[@class="title"]/div[@class="titlewrapper"]/a/h3', '//td[@class="buy"]/div[@class="koopdiv"]/div[@class="currentprice"]', '//td[@class="title"]/div[@class="titlewrapper"]/a', '//div[@id="datatablePagination"]/div/span/a'),
 (2, 2, 'https://www.mariocube.nl/GameCube_Winkel.php?t=Games&p=1', '//div[@id="main_midden"]/div[@id="winkelblokl"]|//div[@id="main_midden"]/div[@id="winkelblokr"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//div[@id="wprijs"]', '//div[@id="wtitel"]/a|//div[@id="wtitels"]/a', '//center//div[@id="kopje"]/a'),
-(3, 1, 'http://www.game-outlet.nl/xbox/xbox-one/games-nieuw/?limit=24', '//div[@class="item"]', '//h3[@class="item-name"]', '//span[@class="item-price"]', '//h3[@class="item-name"]/a', '//ul[@class="pagination"]/li/a');
+(3, 1, 'http://www.game-outlet.nl/xbox/xbox-one/games-nieuw/?limit=24', '//div[@class="item"]', '//h3[@class="item-name"]', '//span[@class="item-price"]', '//h3[@class="item-name"]/a', '//ul[@class="pagination"]/li/a'),
+(4,1,'https://www.intertoys.nl/c/games-en-spelcomputers/xbox-one/xbox-one-games/809557','//a[@class=\"product card\"]','//div[@class=\"content\"]/h4','////div[@class=\"ui price\"]','//a[@class=\"product card\"]','//a[@aria-label=\"Next\"]');
