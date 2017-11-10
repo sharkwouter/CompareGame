@@ -90,15 +90,19 @@ class Parser {
                 //Do different things with the output, based on which query we used
                 if ($key == "link") {
                     $result [$key] = $output->getAttribute('href');
+                    if(!empty($result [$key]) && !strstr($result [$key], $this->urlBase)) {
+                        $result [$key] = $this->urlBase."/".$result [$key];
+                    }
                 } elseif ($key == "price") {
                     $result [$key] = $this->Getfloat($output->nodeValue);
                 } else {
                     $result [$key] = htmlspecialchars_decode($output->nodeValue);
                 }
             }
-
+            print_r($result);
+            print("<br>");
             //Don't add duplicate games or games with no price to the gamesList
-            if ($result ["price"] > 0) {
+            if ($result ["price"] > 0 && !empty($result["link"])) {
                 $new = new Game($result["name"], $result["price"], $result["platform"], $result["store"], $result["link"]);
                 if (!$this->isDuplicateGame($new)) {
                     $this->addGame($new);
