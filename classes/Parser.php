@@ -93,7 +93,7 @@ class Parser {
                 } elseif ($key == "price") {
                     $result [$key] = $this->Getfloat($output->nodeValue);
                 } else {
-                    $result [$key] = $output->nodeValue;
+                    $result [$key] = htmlspecialchars_decode($output->nodeValue);
                 }
             }
 

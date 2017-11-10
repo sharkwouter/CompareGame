@@ -20,7 +20,7 @@ class Import {
 
         //Parse the page
         if (!empty($data)) {
-            $parser = new Parser($data["company"], $data["platform"], new URL($data["url"]), $data["product"], $data["name"], $data["price"], $data["link"], $data["nextpage"]);
+            $parser = new Parser($data["storeid"], $data["platformid"], new URL($data["url"]), $data["product"], $data["name"], $data["price"], $data["link"], $data["nextpage"]);
 
             //Update the timestamp on in the Parse database
             $this->db->updateParseTimestamp($storeid, $platformid);

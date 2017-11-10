@@ -57,18 +57,18 @@ class Database {
 
         //Either add or update the database entry based on if it exists already
         if ($exists) {
-            $queryAdd = $this->db->prepare("UPDATE Game SET name=TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))), price=?, platform=? ,store=?,link=? WHERE link=?"); //We don't want random whitespaces in the name
+            $queryAdd = $this->db->prepare("UPDATE Game SET name=TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))), price=?, platformid=? ,storeid=?,link=? WHERE link=?"); //We don't want random whitespaces in the name
             $queryAdd->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"], $data["link"]));
         } else {
-            $queryAdd = $this->db->prepare("INSERT INTO Game(name,price,platform,store,link) VALUES(TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))),?,?,?,?)"); //again, whitespace filtersn't in the database already
+            $queryAdd = $this->db->prepare("INSERT INTO Game(name,price,platformid,storeid,link) VALUES(TRIM((REPLACE(REPLACE(?,'\t',''),'\n',''))),?,?,?,?)"); //again, whitespace filtersn't in the database already
             $queryAdd->execute(array($data["name"], $data["price"], $data["platform"], $data["store"], $data["link"]));
         }
     }
 
     //Get a single entry from the Parse table
-    public function getParseData(int $company, int $platform): array {
-        $query = $this->db->prepare("SELECT company,platform,url, product, name, price, link, nextpage FROM Parse WHERE company=? AND platform=?");
-        $query->execute(array($company, $platform));
+    public function getParseData(int $store, int $platform): array {
+        $query = $this->db->prepare("SELECT store,platform,url, product, name, price, link, nextpage FROM Parse WHERE storeid=? AND platformid=?");
+        $query->execute(array($store, $platform));
         while ($row = $query->fetch()) {
             return $row;
         }
@@ -77,20 +77,20 @@ class Database {
     }
 
     //Get a single entry from the Parse table, returns an almost empty object otherwise
-    public function getParseDataObject(int $company, int $platform): ParseDataObject {
-        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,product,Parse.name name,price,link,nextpage,lastupdate FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id WHERE Company.id=? AND Platform.id=?");
-        $query->execute(array($company, $platform));
+    public function getParseDataObject(int $store, int $platform): ParseDataObject {
+        $query = $this->db->prepare("SELECT Store.id storeid,Store.name store,Platform.name platform,Platform.id platformid,Parse.url url,product,Parse.name name,price,link,nextpage,lastupdate FROM Parse JOIN Store on Parse.storeid=Store.id JOIN Platform on Parse.platformid=Platform.id WHERE Store.id=? AND Platform.id=?");
+        $query->execute(array($store, $platform));
         while ($row = $query->fetch()) {
             return new ParseDataObject($row);
         }
         //Return empty object if we found nothing
-        return new ParseDataObject(array("storeid" => $company, "store" => "", "platformid" => $platform, "platform" => "", "url" => "", "product" => "", "name" => "", "price" => "", "link" => "", "nextpage" => "", "lastupdate" => null));
+        return new ParseDataObject(array("storeid" => $store, "store" => "", "platformid" => $platform, "platform" => "", "url" => "", "product" => "", "name" => "", "price" => "", "link" => "", "nextpage" => "", "lastupdate" => null));
     }
 
     //Get all data from the Parse table
     public function getParseDataObjects(): array {
         $parseObjectArray = array();
-        $query = $this->db->prepare("SELECT Company.id storeid,Company.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product product,Parse.name name,Parse.price price,Parse.link link,Parse.nextpage nextpage,lastupdate FROM Parse JOIN Company on Parse.company=Company.id JOIN Platform on Parse.platform=Platform.id ORDER BY platform, store");
+        $query = $this->db->prepare("SELECT Store.id storeid,Store.name store,Platform.name platform,Platform.id platformid,Parse.url url,Parse.product product,Parse.name name,Parse.price price,Parse.link link,Parse.nextpage nextpage,lastupdate FROM Parse JOIN Store on Parse.storeid=Store.id JOIN Platform on Parse.platformid=Platform.id ORDER BY platform, store");
         $query->execute();
         while ($parse = $query->fetch()) {
             $parseObjectArray [] = new ParseDataObject($parse);
@@ -98,9 +98,9 @@ class Database {
         return $parseObjectArray;
     }
 
-    public function updateParseTimestamp(int $company, int $platform) {
-        $query = $this->db->prepare("UPDATE Parse SET lastupdate = NOW() WHERE company=? AND platform=?");
-        $query->execute(array($company, $platform));
+    public function updateParseTimestamp(int $store, int $platform) {
+        $query = $this->db->prepare("UPDATE Parse SET lastupdate = NOW() WHERE storeid=? AND platformid=?");
+        $query->execute(array($store, $platform));
     }
 
     //This function allows us to get the query how many pages we need
@@ -110,7 +110,7 @@ class Database {
         if ($platform === 0) {
             $sqlQuery = str_replace("%platform%", "", $sqlQuery);
         } else {
-            $sqlQuery = str_replace("%platform%", "AND platform=" . $platform, $sqlQuery);
+            $sqlQuery = str_replace("%platform%", "AND platformid=" . $platform, $sqlQuery);
         }
 
         //Get amount from database
@@ -127,7 +127,7 @@ class Database {
         $gameList = array();
 
         //base sql query
-        $sqlQuery = "SELECT Game.name name,price,Company.name store,Platform.name platform,link,Company.url storelink,Platform.id FROM Game JOIN Platform on Game.platform=Platform.id JOIN Company on Game.store=Company.id WHERE Game.name LIKE ? %platform% ORDER BY %order% LIMIT %limit%";
+        $sqlQuery = "SELECT Game.name name,price,Store.name store,Platform.name platform,link,Store.url storelink,Platform.id FROM Game JOIN Platform on Game.platformid=Platform.id JOIN Store on Game.storeid=Store.id WHERE Game.name LIKE ? %platform% ORDER BY %order% LIMIT %limit%";
 
         //Set the string for the sort order direction
         if ($orderDirection > 0) {
@@ -162,7 +162,7 @@ class Database {
 
         //Add games
         while ($game = $querySearch->fetch()) {
-            $gameList [] = new Game($game["name"], $game["price"], $game["platform"], $game["store"], $game["link"]);
+            $gameList [] = new Game($game["name"], $game["price"], $game["platformid"], $game["storeid"], $game["link"]);
         }
 
         return $gameList;
@@ -184,7 +184,7 @@ class Database {
     public function getStores(): array {
         $storeArray = array();
 
-        $storeQuery = $this->db->prepare("SELECT id, name, url FROM Company");
+        $storeQuery = $this->db->prepare("SELECT id, name, url FROM Store");
         $storeQuery->execute();
         while ($store = $storeQuery->fetch()) {
             $storeObject = new Store($store["name"], new Url($store["url"]));
@@ -196,18 +196,18 @@ class Database {
     }
 
     public function addStore(Store $store) {
-        $storeQuery = $this->db->prepare("INSERT INTO Company(name,url) VALUES(?,?)");
+        $storeQuery = $this->db->prepare("INSERT INTO Store(name,url) VALUES(?,?)");
         $storeQuery->execute(array($store, $store->getUrl()));
     }
 
     public function removeStore(int $id) {
-        $removeGamesQuery = $this->db->prepare("DELETE FROM Game WHERE store=?");
+        $removeGamesQuery = $this->db->prepare("DELETE FROM Game WHERE storeid=?");
         $removeGamesQuery->execute(array($id));
 
-        $removeParseQuery = $this->db->prepare("DELETE FROM Parse WHERE company=?");
+        $removeParseQuery = $this->db->prepare("DELETE FROM Parse WHERE storeid=?");
         $removeParseQuery->execute(array($id));
 
-        $removeStoreQuery = $this->db->prepare("DELETE FROM Company WHERE id=?");
+        $removeStoreQuery = $this->db->prepare("DELETE FROM Store WHERE id=?");
         $removeStoreQuery->execute(array($id));
     }
 
@@ -219,7 +219,7 @@ class Database {
         $exists = false;
 
         //run query to see if the game is already in the database
-        $queryFindParse = $this->db->prepare("SELECT url FROM Parse WHERE company=? AND platform=?");
+        $queryFindParse = $this->db->prepare("SELECT url FROM Parse WHERE storeid=? AND platformid=?");
         $queryFindParse->execute(array($data["storeid"],$data["platformid"]));
 
         //If we find one, set exists to true
@@ -230,10 +230,10 @@ class Database {
 
         //Either add or update the database entry based on if it exists already
         if ($exists) {
-            $queryAdd = $this->db->prepare("UPDATE Parse SET url=?,product=?,name=?,price=?,link=?,nextpage=? WHERE company=? AND platform=?");
+            $queryAdd = $this->db->prepare("UPDATE Parse SET url=?,product=?,name=?,price=?,link=?,nextpage=? WHERE storeid=? AND platformid=?");
             $queryAdd->execute(array($data["url"], $data["product"], $data["name"], $data["price"], $data["link"], $data["nextpage"],$data["storeid"], $data["platformid"]));
         } else {
-            $queryAdd = $this->db->prepare("INSERT INTO Parse(company,platform,url,product,name,price,link,nextpage) VALUES(?,?,?,?,?,?,?,?)");
+            $queryAdd = $this->db->prepare("INSERT INTO Parse(storeid,platformid,url,product,name,price,link,nextpage) VALUES(?,?,?,?,?,?,?,?)");
             $queryAdd->execute(array($data["storeid"], $data["platformid"], $data["url"], $data["product"], $data["name"], $data["price"], $data["link"], $data["nextpage"]));
         }
     }
