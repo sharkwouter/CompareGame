@@ -67,7 +67,7 @@ class Database {
 
     //Get a single entry from the Parse table
     public function getParseData(int $store, int $platform): array {
-        $query = $this->db->prepare("SELECT store,platform,url, product, name, price, link, nextpage FROM Parse WHERE storeid=? AND platformid=?");
+        $query = $this->db->prepare("SELECT storeid,platformid,url, product, name, price, link, nextpage FROM Parse WHERE storeid=? AND platformid=?");
         $query->execute(array($store, $platform));
         while ($row = $query->fetch()) {
             return $row;
