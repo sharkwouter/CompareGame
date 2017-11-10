@@ -33,7 +33,8 @@ $parseDataObjects = $GLOBALS['db']->getParseDataObjects();
 <html>
     <head>
         <meta charset="UTF-8">
-        <title></title>
+        <title>Update</title>
+        <link rel="stylesheet" href="styles.css"> 
     </head>
     <body>
         <?php $navbar->printNavbar(); ?>
